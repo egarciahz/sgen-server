@@ -1,0 +1,10 @@
+{
+	"npmClient": "npm",
+	"useWorkspaces": true,
+  "packages": [
+    "packages/*",
+    "src"
+  ],
+  "version": "0.1.0",
+  "lerna": "^4.0.0"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "description": "Sequelize GraphQL Express node server",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "server"
+  ],
+  "author": "Ezequiel Garcia",
+  "license": "MIT",
+  "devDependencies": {
+    
+  }
+}

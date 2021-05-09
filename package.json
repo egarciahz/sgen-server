@@ -1,0 +1,22 @@
+{
+  "name": "sgen",
+  "version": "0.1.0",
+  "description": "Sequelize GraphQL Express node server",
+  "author": "Ezequiel Garcia",
+  "license": "MIT",
+  "scripts" : {
+  	"start": "lerna run start --scope=server",
+    "test": "lerna run test --scope=server",
+    "build": "lerna run build --scope={server,@server/bin}",
+  	"new-version": "lerna version --conventional-commits --yes",
+  	"diff": "lerna diff"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}
