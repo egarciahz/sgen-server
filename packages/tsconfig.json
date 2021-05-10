@@ -1,9 +1,0 @@
-{
-    "files": [],
-    "references": [
-        "authentication",
-        "graphql",
-        "utils",
-        "config"
-    ],
-}

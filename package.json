@@ -1,22 +1,35 @@
 {
-  "name": "sgen",
+  "name": "server",
   "version": "0.1.0",
-  "description": "Sequelize GraphQL Express node server",
+  "description": "Sequelize GraphQL Express Node server",
   "author": "Ezequiel Garcia",
   "license": "MIT",
-  "scripts" : {
-  	"start": "lerna run start --scope=server",
-    "test": "lerna run test --scope=server",
-    "build": "lerna run build --scope={server,@server/bin}",
-  	"new-version": "lerna version --conventional-commits --yes",
-  	"diff": "lerna diff"
+  "main": "./app/index",
+  "scripts": {
+    "start": "ts-node ./app/index.ts",
+    "build": "tsc --project ./",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "./packages/*"
+  ],
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "@playlyfe/gql": "^2.6.2",
+    "@types/node": "^15.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "fs-extra": "^9.0.1",
+    "nodemon": "^2.0.7",
+    "prettier": "2.3.0",
+    "rimraf": "^3.0.2",
+    "sequelize-cli": "^6.2.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.0.3"
+  },
+  "engines": {
+    "node": ">=13.3.0",
+    "npm": ">=7.0.0"
   }
 }

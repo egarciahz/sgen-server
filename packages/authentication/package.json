@@ -1,3 +1,4 @@
 {
-	"name":"@server/authentication"
+  "version": "0.1.0",
+  "name": "@server/authentication"
 }
