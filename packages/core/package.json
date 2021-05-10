@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "name": "@server/utils",
+  "name": "@server/core",
   "main": "index",
   "license": "MIT"
 }

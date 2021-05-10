@@ -1,3 +1,3 @@
-import mo from "@server/utils";
+import mo from "@server/core";
 
 console.log(mo);
