@@ -11,8 +11,8 @@ const DEBUG = ENVIRONMENT === 'development';
 module.exports = {
   'env' : ENVIRONMENT,
   'debug' : DEBUG,
-  'config': path.resolve('./src/config', 'sequelize.ts'),
-  'models-path': path.resolve('./src/db', 'models'),
-  'seeders-path': path.resolve('./src/db', 'seeders'),
-  'migrations-path': path.resolve('./src/db', 'migrations')
+  'config': path.resolve('./app/config', 'sequelize.ts'),
+  'models-path': path.resolve('./app/db', 'models'),
+  'seeders-path': path.resolve('./app/db', 'seeders'),
+  'migrations-path': path.resolve('./app/db', 'migrations')
 };

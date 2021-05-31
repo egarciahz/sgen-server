@@ -1,0 +1,13 @@
+{
+    "version": "0.1.0",
+    "name": "@server/filestore",
+    "main": "index.ts",
+    "license": "MIT",
+    "dependencies": {
+      "graphql-upload": "^11.0.0",
+      "bcrypt": "^5.0.0",
+      "mkdirp": "^1.0.4",
+      "path": "^0.12.7"
+    }
+  }
+  
