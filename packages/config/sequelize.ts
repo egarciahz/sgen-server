@@ -1,13 +1,17 @@
-import filterex from '../lib/filterex';
-import mapKeys from '../lib/mapKeys';
-import env, { isProdMode } from "./env";
+import {filterex, mapKeys, isProdMode, ENV} from '@server/core';
+
+type DatabaseFields = {
+    dialect: string;
+    database: string;
+    password: string;
+    username: string;
+}
 
 const config = mapKeys(
-    filterex(env, /^DB_/),
+    filterex(ENV, /^DB_/),
     (key) => key.replace(/^DB_/, '').toLowerCase()
-);
-config.database = isProdMode ? config.database : `${config?.database}_${env.ENVIRONMENT}`;
+) as DatabaseFields;
 
-module.exports = config;
+config.database = isProdMode ? config.database : `${config?.database}_${ENV.ENVIRONMENT}`;
 
-export default config;
+export {config, DatabaseFields};

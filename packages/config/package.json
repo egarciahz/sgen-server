@@ -1,5 +1,9 @@
 {
   "version": "0.1.0",
   "name": "@server/config",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "./index",
+  "dependencies": {
+    "@server/core": "^0.1.0"
+  }
 }

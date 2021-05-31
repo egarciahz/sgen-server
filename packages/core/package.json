@@ -2,5 +2,10 @@
   "version": "0.1.0",
   "name": "@server/core",
   "main": "index",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "dotenv":"10.0.0",
+    "dotenv-parse-variables":"2.0.0"
+  }
 }

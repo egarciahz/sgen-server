@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
- * map key names of object
- * @param target - target object
- * @param predicate - function modifier
+ * @description 
+ * Rename keys of an object
  * 
+ * @param target - base object
+ * @param predicate - function modifier that return string for new key name or null for skip
+ * s
  */
-const mapKeys = <T extends Record<string, any>>(
+export const mapKeys = <T extends Record<string, any>>(
     target: T,
     predicate: (key: keyof T) => string | null
 ): Record<string, any> =>
@@ -17,4 +20,3 @@ const mapKeys = <T extends Record<string, any>>(
             return store;
         }, {});
 
-export default mapKeys;
