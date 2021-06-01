@@ -12,7 +12,7 @@
     "removeComments": true,
     "declaration": false,
     "sourceMap": false,
-    "outDir": "./server/dist",
+    "outDir": "./dist",
     "baseUrl": ".",
     "lib": ["DOM", "ES2018", "ESNext.AsyncIterable"],
     "paths": {
