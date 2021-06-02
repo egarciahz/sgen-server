@@ -6,4 +6,5 @@ export * from './utils/normalizePort'
 export * from './utils/parseAdditionalFields'
 export * from './loaders'
 export * from './composer'
-export * from './env'
+
+export const isProdMode: boolean = process.env.NODE_ENV === 'production'
