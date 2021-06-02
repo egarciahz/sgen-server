@@ -1,6 +1,29 @@
 {
   "version": "0.1.0",
   "name": "@server/gql",
-  "main": "index.ts",
-  "license": "MIT"
+  "main": "./src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@server/auth": "^0.1.0",
+    "class-validator": "^0.13.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.5.0",
+    "graphql-relay": "^0.7.0",
+    "sequelize": "^6.6.2",
+    "sequelize-typescript": "^2.1.0",
+    "type-graphql": "^1.1.1"
+  },
+  "peerDependencies": {
+    "graphql": "^15.5.0"
+  },
+  "devDependencies": {
+    "@types/graphql-relay": "^0.6.0",
+    "@types/graphql-upload": "^8.0.4"
+  },
+  "workspaces":{
+    "nohoist": [
+      "graphql-relay",
+      "graphql-relay/**"
+    ]
+  }
 }
