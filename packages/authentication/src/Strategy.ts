@@ -1,11 +1,10 @@
 import { Strategy as JwtStrategy } from 'passport-jwt';
 import { Strategy as LocalStrategy, IStrategyOptions } from 'passport-local';
 
-import { JWT_STRATEGY_OPTIONS,  } from '../../config/auth/config';
+import { JWT_STRATEGY_OPTIONS } from '../../config/auth/config';
 import { LocalFinder, UNAME_KEY } from "./Auth";
-//import omitFields from '../omitFields';
-import Secret from './Secret';
 import Encoder, { Deserialize } from './Encoder';
+import Secret from './Secret';
 import { IUser } from './IUser';
 
 type Next = (...args: unknown[]) => void;

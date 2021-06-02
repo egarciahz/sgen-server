@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import { Request, NextFunction } from 'express';
 
-
 import makePayload from './makePayload';
 import AuthResponse from './AuthResponse';
 import Strategy from './Strategy';

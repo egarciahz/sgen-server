@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Statement = {
     id: number;
     name: string;
@@ -19,7 +18,6 @@ export type IRole = Statement & {
     level: ROLE_LEVEL;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type IUser<U = {}> = {
     email: string;
     active: boolean;
