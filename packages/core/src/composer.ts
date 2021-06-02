@@ -1,9 +1,8 @@
 import cors from 'cors'
 import path from 'path'
 import morgan from 'morgan'
-import { isArray, isString, pick, omit } from 'lodash'
+import { isString, pick, omit } from 'lodash'
 import fs from 'fs'
-
 import { Express } from 'express'
 import { graphqlHTTP } from 'express-graphql'
 import { json as parserJSON } from 'body-parser'
@@ -18,13 +17,7 @@ import {
     UploadOptions,
 } from 'graphql-upload'
 import Upload from 'graphql-upload/public/Upload.js'
-
-import { normalizePort } from './utils/normalizePort'
-import { ENV, isProdMode } from './env'
-
-export const HOST: string = ENV?.HOST ?? 'http://localhost'
-export const PORT: number = normalizePort(ENV?.PORT ?? '8080')
-export const URI: string = [ENV?.HOST, PORT].join(':')
+import { isProdMode } from './index'
 
 export const buildPaths: (
     rootDir: string,
@@ -41,18 +34,22 @@ export const buildPaths: (
 type ComposerConfig = UploadOptions &
     Omit<BuildSchemaOptions, 'resolvers'> & {
         rootDir: string
+        siteUrl?: string
+        whitelist?: string[] | string
         graphiql?: boolean
         resolvers?: NonEmptyArray<string>
     }
 
-export async function composer(
+export function composer(
     app: Express,
     { rootDir, graphiql, ...config }: ComposerConfig
-): Promise<Express> {
+): Express {
     const uploadConfig = pick(config, 'maxFiles', 'maxFileSize', 'maxFieldSize')
     const {
         resolvers: _resolvers = [],
-        // ...builderOptions
+        whitelist,
+        siteUrl,
+        ...builderOptions
     } = omit(config, 'maxFiles', 'maxFileSize', 'maxFieldSize')
     /**
      * check rootDir
@@ -75,14 +72,12 @@ export async function composer(
     const schema = buildSchemaSync({
         resolvers: [...PathResolvers],
         scalarsMap: [{ scalar: GraphQLUpload, type: Upload }],
+        ...builderOptions,
     })
 
     app.use(
         cors({
             origin: (origin, next) => {
-                const WHITELIST = (
-                    isArray(ENV.ORIGINS) ? ENV.ORIGINS : [ENV.ORIGINS]
-                ).filter(isString)
                 /**
                  * in production, abort if origin is undefined
                  */
@@ -102,17 +97,17 @@ export async function composer(
                 /**
                  * if accept all origins its present
                  */
-                if (WHITELIST.indexOf('*') > -1) {
+                if (whitelist.indexOf('*') > -1) {
                     return next(null, true)
                 }
                 /**
                  * if origin is not present or not equal to URL
                  */
-                if (WHITELIST.indexOf(origin) < 0) {
+                if (whitelist.indexOf(origin) < 0) {
                     return next(
                         new Error('Not allowed by CORS. Site not allowed')
                     )
-                } else if (origin !== ENV?.URL) {
+                } else if (origin !== siteUrl) {
                     return next(
                         new Error(
                             'Not allowed by CORS. Only accept same origin'

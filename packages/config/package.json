@@ -2,7 +2,7 @@
   "version": "0.1.0",
   "name": "@server/config",
   "license": "MIT",
-  "main": "./index.ts",
+  "main": "./src/index.ts",
   "dependencies": {
     "@server/core": "^0.1.0",
     "class-validator": "^0.13.1",

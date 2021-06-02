@@ -1,11 +1,13 @@
 import { filterex, mapKeys, isProdMode } from '@server/core'
+import { Dialect } from 'sequelize'
 import { ENV } from './env'
 
 type DatabaseFields = {
-    dialect: string
+    dialect: Dialect
     database: string
     password: string
     username: string
+    host?: string
 }
 
 const database = mapKeys(filterex(ENV, /^DB_/), (key) =>
