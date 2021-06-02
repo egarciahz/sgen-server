@@ -7,9 +7,7 @@ import fs from 'fs'
 import { Express } from 'express'
 import { graphqlHTTP } from 'express-graphql'
 import { json as parserJSON } from 'body-parser'
-// import { makeExecutableSchema } from '@graphql-tools/schema'
 import {
-    // buildTypeDefsAndResolvers,
     BuildSchemaOptions,
     NonEmptyArray,
     buildSchemaSync,
@@ -23,8 +21,6 @@ import Upload from 'graphql-upload/public/Upload.js'
 
 import { normalizePort } from './utils/normalizePort'
 import { ENV, isProdMode } from './env'
-// import { GraphQLID } from 'graphql'
-// import { loadTypeDirectories } from './loaders'
 
 export const HOST: string = ENV?.HOST ?? 'http://localhost'
 export const PORT: number = normalizePort(ENV?.PORT ?? '8080')
