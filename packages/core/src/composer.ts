@@ -7,27 +7,30 @@ import fs from 'fs'
 import { Express } from 'express'
 import { graphqlHTTP } from 'express-graphql'
 import { json as parserJSON } from 'body-parser'
-import { makeExecutableSchema } from '@graphql-tools/schema'
+// import { makeExecutableSchema } from '@graphql-tools/schema'
 import {
-    buildTypeDefsAndResolvers,
+    // buildTypeDefsAndResolvers,
     BuildSchemaOptions,
     NonEmptyArray,
+    buildSchemaSync,
 } from 'type-graphql'
 import {
     GraphQLUpload,
     graphqlUploadExpress,
     UploadOptions,
 } from 'graphql-upload'
+import Upload from 'graphql-upload/public/Upload.js'
 
 import { normalizePort } from './utils/normalizePort'
 import { ENV, isProdMode } from './env'
-import { loadTypeDirectories } from './loaders'
+// import { GraphQLID } from 'graphql'
+// import { loadTypeDirectories } from './loaders'
 
 export const HOST: string = ENV?.HOST ?? 'http://localhost'
 export const PORT: number = normalizePort(ENV?.PORT ?? '8080')
 export const URI: string = [ENV?.HOST, PORT].join(':')
 
-const buildPath: (
+export const buildPaths: (
     rootDir: string,
     paths: NonEmptyArray<string>
 ) => NonEmptyArray<string> = (rootDir, paths) =>
@@ -44,69 +47,84 @@ type ComposerConfig = UploadOptions &
         rootDir: string
         graphiql?: boolean
         resolvers?: NonEmptyArray<string>
-        types?: NonEmptyArray<string>
     }
 
 export async function composer(
     app: Express,
     { rootDir, graphiql, ...config }: ComposerConfig
-): Promise<void> {
+): Promise<Express> {
     const uploadConfig = pick(config, 'maxFiles', 'maxFileSize', 'maxFieldSize')
     const {
         resolvers: _resolvers = [],
-        types = [],
-        ...builderSchema
+        // ...builderOptions
     } = omit(config, 'maxFiles', 'maxFileSize', 'maxFieldSize')
-
+    /**
+     * check rootDir
+     */
     if (!fs.existsSync(rootDir)) {
         throw new Error(
             `rootDir is not found: ${rootDir}. Consider using absolute paths`
         )
     }
-
-    const PathResolvers = buildPath(rootDir, [
-        path.join('graphql', 'resolvers'),
+    /**
+     * Resolve paths for definitions of kind resolver
+     */
+    const PathResolvers = buildPaths(rootDir, [
+        path.join('graphql'),
         ..._resolvers,
-    ])
-    const PathTypes = buildPath(rootDir, [
-        path.join('graphql', 'types'),
-        ...types,
-    ])
-    const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
-        resolvers: PathResolvers,
-        ...builderSchema,
-    })
-    const schema = makeExecutableSchema({
-        resolvers: Object.assign({ Upload: GraphQLUpload }, resolvers),
-        typeDefs: loadTypeDirectories(PathTypes, [typeDefs]),
+    ]).map((pt) => path.join(pt, '/**/*.{ts,js}')) as NonEmptyArray<string>
+    /**
+     * make executable schema
+     */
+    const schema = buildSchemaSync({
+        resolvers: [...PathResolvers],
+        scalarsMap: [{ scalar: GraphQLUpload, type: Upload }],
     })
 
     app.use(
         cors({
-            origin: (origin, callback) => {
-                if (!ENV?.ORIGINS) {
-                    ENV?.URL === origin
-                        ? callback(null, true)
-                        : callback(
-                              new Error(
-                                  'Not allowed by CORS. Only accept same origin'
-                              )
-                          )
-                    return
+            origin: (origin, next) => {
+                const WHITELIST = (
+                    isArray(ENV.ORIGINS) ? ENV.ORIGINS : [ENV.ORIGINS]
+                ).filter(isString)
+                /**
+                 * in production, abort if origin is undefined
+                 */
+                if (!origin && isProdMode) {
+                    return next(
+                        new Error(
+                            'Not allowed by CORS. Unassigned origin is only available in development mode'
+                        )
+                    )
                 }
-                if (ENV.ORIGINS === '*') {
-                    callback(null, true)
-                    return
+                /**
+                 * in development, accept if origin is undefined
+                 */
+                if (!origin) {
+                    return next(null, true)
                 }
-                const whitelist = isArray(ENV.ORIGINS)
-                    ? ENV.ORIGINS
-                    : [ENV.ORIGINS]
+                /**
+                 * if accept all origins its present
+                 */
+                if (WHITELIST.indexOf('*') > -1) {
+                    return next(null, true)
+                }
+                /**
+                 * if origin is not present or not equal to URL
+                 */
+                if (WHITELIST.indexOf(origin) < 0) {
+                    return next(
+                        new Error('Not allowed by CORS. Site not allowed')
+                    )
+                } else if (origin !== ENV?.URL) {
+                    return next(
+                        new Error(
+                            'Not allowed by CORS. Only accept same origin'
+                        )
+                    )
+                }
 
-                whitelist.indexOf(origin) !== -1
-                    ? callback(null, true)
-                    : callback(
-                          new Error('Not allowed by CORS. Site not allowed')
-                      )
+                return next(null, true)
             },
             optionsSuccessStatus: 200,
             preflightContinue: true,
@@ -136,4 +154,6 @@ export async function composer(
             graphiql: graphiql ?? !isProdMode,
         }))
     )
+
+    return app
 }
