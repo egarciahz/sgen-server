@@ -2,6 +2,7 @@
   "version": "0.1.0",
   "name": "@server/gql",
   "main": "./src/index.ts",
+  "private": true,
   "license": "MIT",
   "dependencies": {
     "@server/auth": "^0.1.0",

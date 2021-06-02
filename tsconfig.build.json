@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "CommonJS",
-    "target": "es6",
+    "target": "ES2018",
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "noImplicitAny": false,
@@ -14,7 +14,7 @@
     "sourceMap": false,
     "outDir": "./dist",
     "baseUrl": ".",
-    "lib": ["DOM", "ES2018", "ESNext.AsyncIterable"],
+    "lib": ["ES2018", "ESNext.AsyncIterable"],
     "paths": {
       "*": ["node_modules/*"]
     }

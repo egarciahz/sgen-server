@@ -1,4 +1,19 @@
 {
   "version": "0.1.0",
-  "name": "@server/authentication"
+  "name": "@server/auth",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@types/express": "^4.17.12",
+    "bcrypt": "^5.0.0",
+    "class-validator": "^0.13.1",
+    "express": "^4.17.1",
+    "graphql": "^15.5.0",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.6.2",
+    "sequelize-typescript": "^2.1.0"
+  }
 }
