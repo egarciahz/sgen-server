@@ -8,6 +8,7 @@ type DatabaseFields = {
     password: string
     username: string
     host?: string
+    port?: string
 }
 
 const database = mapKeys(filterex(ENV, /^DB_/), (key) =>
