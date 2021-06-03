@@ -3,7 +3,6 @@
   "name": "@server/auth",
   "main": "src/index.ts",
   "dependencies": {
-    "@types/express": "^4.17.12",
     "bcrypt": "^5.0.0",
     "class-validator": "^0.13.1",
     "express": "^4.17.1",
@@ -15,5 +14,12 @@
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.12",
+    "@types/jsonwebtoken": "^8.5.1",
+    "@types/passport": "^1.0.6",
+    "@types/passport-jwt": "^3.0.5",
+    "@types/passport-local": "^1.0.33"
   }
 }
