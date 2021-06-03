@@ -1,0 +1,25 @@
+require('reflect-metadata')
+require('ts-node/register')
+
+const path = require('path')
+const URL = require('url').URL
+const { sequelize: config } = require('@server/config')
+
+const url = new URL(`${config.dialect}://localhost/${config.database}`)
+url.protocol = config.dialect
+url.host = config.host || 'localhost'
+url.host = config.port
+url.username = config.username
+url.password = config.password
+url.pathname = config.database
+
+const env = process.env.NODE_ENV || 'development'
+
+module.exports = {
+    env,
+    url: url.toString(),
+    debug: true,
+    'models-path': path.join(__dirname, './src/', 'entities'),
+    'seeders-path': path.join(__dirname, './src/', 'seeders'),
+    'migrations-path': path.join(__dirname, './src/', 'migrations'),
+}
