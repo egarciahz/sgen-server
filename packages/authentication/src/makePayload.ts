@@ -1,21 +1,29 @@
-import { SignOptions } from 'jsonwebtoken';
-import { JWT_SIGN_TOKEN } from '../../config/auth/config';
-import { IUser } from './IUser';
+import { IUser } from './IUser'
 
-type Payload = SignOptions & {
-    data: string,
+type Payload = {
+    data: string
     secret: string
-};
+}
 
-export default function makePayload<U extends IUser>(user: U, usernameKey: keyof U = 'email'): Payload {
+type PayloadOptions = {
+    keyname: string
+    exp: string | Date
+    secret: string
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default function makePayload<U extends IUser<{}>>(
+    user: U,
+    { keyname, exp, secret }: PayloadOptions
+): Payload {
     const payload = {
+        exp,
         sub: user.id,
-        exp: JWT_SIGN_TOKEN.expiresIn,
-        [usernameKey]: user[usernameKey]
-    };
+        [keyname]: user[keyname],
+    }
 
     return {
-        ...JWT_SIGN_TOKEN,
-        data: JSON.stringify(payload)
-    };
+        secret,
+        data: JSON.stringify(payload),
+    }
 }

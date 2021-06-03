@@ -1,14 +1,13 @@
-import Authentication from "./Authentication";
-import AuthResponse from "./AuthResponse";
-import Strategy from "./Strategy";
-import Secret from "./Secret";
-import Encoder from "./Encoder";
-import IAuth from "./IAuth";
-import Middleware from "./middleware";
+import Authentication from './Authentication'
+import AuthResponse from './AuthResponse'
+import Strategy from './Strategy'
+import Secret from './Secret'
+import Encoder from './Encoder'
+import Middleware from './middleware'
 
-export * from "./Auth";
-export * from "./errors";
-export * from "./IUser";
+export * from './Auth'
+export * from './errors'
+export * from './IUser'
 
 export {
     Authentication,
@@ -16,6 +15,5 @@ export {
     Strategy,
     Secret as Password,
     Encoder,
-    IAuth,
-    Middleware
+    Middleware,
 }

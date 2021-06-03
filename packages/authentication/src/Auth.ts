@@ -1,10 +1,10 @@
-import { GraphQLError } from "graphql";
-import { IUser } from "./IUser";
-import IAuth from "./IAuth";
+import { GraphQLError } from 'graphql'
+import { IUser, IAuth } from './IUser'
 
-export const UNAME_KEY: keyof IUser = "email"
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const UNAME_KEY: keyof IUser<{}> = 'email'
 
-export type LocalFinder<U extends IUser = IUser> = (email: string) => Promise<U | null>;
+export type LocalFinder<T> = (key: string) => Promise<IUser<T> | null>
 
 export interface AuthContext {
     info?: GraphQLError
@@ -12,14 +12,15 @@ export interface AuthContext {
     token?: string
 }
 
-export default class Auth implements IAuth {
-    user: IUser = null;
-    token: string = null;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class Auth<U extends {}> implements IAuth<U> {
+    user: IUser<U> = null
+    token: string = null
     // tslint:disable-next-line: variable-name
-    readonly __typename: string = "Auth";
+    readonly __typename: string = 'Auth'
 
-    constructor(user: IUser, token: string) {
-        this.user = user;
-        this.token = token;
+    constructor(user: IUser<U>, token: string) {
+        this.user = user
+        this.token = token
     }
 }
