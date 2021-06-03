@@ -1,19 +1,18 @@
 import Authentication from './Authentication'
-import AuthResponse from './AuthResponse'
 import Strategy from './Strategy'
-import Secret from './Secret'
+import Secret, { PasswordChunk } from './Secret'
 import Encoder from './Encoder'
 import Middleware from './middleware'
 
 export * from './Auth'
-export * from './errors'
-export * from './IUser'
+export * from './Errors'
+export * from './Interfaces'
 
 export {
     Authentication,
-    AuthResponse,
     Strategy,
     Secret as Password,
     Encoder,
     Middleware,
+    PasswordChunk,
 }

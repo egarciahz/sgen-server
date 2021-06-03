@@ -51,7 +51,7 @@ export default class Secret {
                         return res(true)
                     }
 
-                    rej({ message: 'Incorrect Password' })
+                    rej({ message: 'Incorrect Password', code: 401 })
                 }
             )
         })

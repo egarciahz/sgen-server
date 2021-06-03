@@ -1,25 +1,55 @@
-import { Strategy as JwtStrategy } from 'passport-jwt'
+import {
+    Strategy as JwtStrategy,
+    ExtractJwt,
+    StrategyOptions,
+} from 'passport-jwt'
+import _ from 'lodash'
+import { Request } from 'express'
+import { Algorithm } from 'jsonwebtoken'
 import { Strategy as LocalStrategy, IStrategyOptions } from 'passport-local'
 
-import { LocalFinder, UNAME_KEY } from './Auth'
 import Encoder, { Deserialize } from './Encoder'
-
+import { IUser, LocalFinder } from './Interfaces'
 import Secret from './Secret'
-import { IUser } from './IUser'
 
 type Next = (...args: unknown[]) => void
+
 type Options<T> = {
     finder: LocalFinder<IUser<T>>
-} & IStrategyOptions
+    keyName: string
+    algorithm: Algorithm
+    expiresIn: number
+    secret: string
+}
+
+type Config<T> = Options<T> & IStrategyOptions
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default class Strategy<T extends {}> {
-    private options: Options<T>
+    private options: Config<T>
     deserialize: () => Deserialize
 
-    constructor(options: Options<T>) {
+    constructor(options: Config<T>) {
         this.options = options
         this.deserialize = () => Encoder.deserialize(options.finder)
+    }
+
+    isSession(): boolean {
+        return !!this.options?.session
+    }
+
+    getOptions(): Omit<Options<T>, 'finder'> {
+        return _.pick(
+            this.options,
+            'algorithm',
+            'expiresIn',
+            'secret',
+            'keyName'
+        )
+    }
+
+    setSecret(secret: string): void {
+        this.options.secret = secret
     }
 
     authenticate(): (email: string, password: string, next: unknown) => void {
@@ -28,25 +58,39 @@ export default class Strategy<T extends {}> {
                 .finder(email)
                 .then((user) => {
                     if (!user) {
-                        return next(null, false, { message: 'User not found' })
+                        return next(null, false, {
+                            message: 'User not found',
+                            code: 404,
+                        })
                     }
 
                     Secret.has(password, { salt: user.salt, hash: user.hash })
-                        .then(() => next(null, user)) //omitFields(user, BLACK_BOX)
+                        .then(() => next(null, user))
                         .catch((error) => next(null, false, error))
                 })
                 .catch((error) => next(null, false, error))
         }
     }
 
+    extractToken(request: Request): string | never {
+        return ExtractJwt.fromAuthHeaderAsBearerToken()(request)
+    }
+
     createLocalStrategy(): LocalStrategy {
         return new LocalStrategy(this.options, this.authenticate())
     }
 
-    createJwtStrategy(): JwtStrategy {
-        const finder = this.deserialize()
-        return new JwtStrategy(JWT_STRATEGY_OPTIONS, (payload, next) =>
-            finder(payload[UNAME_KEY], next)
+    createJwtStrategy(
+        config?: Omit<StrategyOptions, 'jwtFromRequest' | 'algorithms'>
+    ): JwtStrategy {
+        const _conf = _.defaults(config ?? {}, {
+            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            algorithms: [this.options.algorithm],
+        })
+        const finderProxy = this.deserialize()
+
+        return new JwtStrategy(_conf, (payload, next) =>
+            finderProxy(payload[this.options.keyName], next)
         )
     }
 }

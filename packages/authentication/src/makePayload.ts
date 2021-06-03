@@ -1,29 +1,20 @@
-import { IUser } from './IUser'
-
-type Payload = {
-    data: string
-    secret: string
-}
+import { IUser } from './Interfaces'
 
 type PayloadOptions = {
-    keyname: string
-    exp: string | Date
-    secret: string
+    keyName: string
+    expiresIn: number
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default function makePayload<U extends IUser<{}>>(
     user: U,
-    { keyname, exp, secret }: PayloadOptions
-): Payload {
+    { keyName, expiresIn }: PayloadOptions
+): string {
     const payload = {
-        exp,
+        exp: expiresIn,
         sub: user.id,
-        [keyname]: user[keyname],
+        [keyName]: user[keyName],
     }
 
-    return {
-        secret,
-        data: JSON.stringify(payload),
-    }
+    return JSON.stringify(payload)
 }

@@ -1,4 +1,8 @@
-type Statement = {
+import { GraphQLError } from 'graphql'
+
+export type IID = string | number
+
+export type Statement = {
     id: number
     name: string
     description?: string
@@ -24,13 +28,22 @@ export type IUser<U extends {}> = {
     verify: boolean
     salt: string
     hash: string
-    id: number | string
+    id: IID
     roles: IRole[]
     permissions: IPermission[]
     ownerId: number
 } & U
 
+export type LocalFinder<T> = (value: string) => Promise<IUser<T> | null>
+
+export interface AuthContext {
+    info?: GraphQLError
+    error?: GraphQLError
+    token?: string
+}
+
 export interface IAuth<U> {
+    id: IID
     user: IUser<U>
     token: string
 }

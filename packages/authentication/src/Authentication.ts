@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
 import { Request, NextFunction, Response } from 'express'
+import _ from 'lodash'
 
 import makePayload from './makePayload'
 import Strategy from './Strategy'
-import { IUser } from './IUser'
+import { IUser } from './Interfaces'
 
 /**
  * @privateRemarks
@@ -18,13 +19,18 @@ import { IUser } from './IUser'
  */
 export default class Authentication<U> {
     debug = true
-    strategy: Strategy<any, U>
+    strategy: Strategy<U>
 
-    constructor(strategy: Strategy<any, U>) {
+    constructor(strategy: Strategy<U>) {
         this.strategy = strategy
     }
 
-    login(require: Request, response: Response, next: NextFunction): void {
+    login(
+        require: Request,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        response: Response & { auth: any },
+        next: NextFunction
+    ): void {
         passport.authenticate('local', { session: false }, (error, user) => {
             if (error) {
                 if (this.debug && error.message)
@@ -35,10 +41,8 @@ export default class Authentication<U> {
             if (!user) {
                 return next(new Error('User not found'))
             }
-
-            const { data, ...config } = makePayload(user, {
-                exp: this.strategy,
-            })
+            const config = this.strategy.getOptions()
+            const data = makePayload(user, config)
             jwt.sign(
                 data,
                 config.secret,
@@ -47,28 +51,35 @@ export default class Authentication<U> {
                     if (error) {
                         return next(error)
                     }
-                    response.user = user
+                    if (!_.isObject(response.auth)) {
+                        response.auth = {}
+                    }
+
+                    response.auth.user = user
                     response.json({ data: { token, user } })
                 }
             )
         })(require, response, next)
     }
 
-    async loginWithPasswort<U extends IUser = IUser>(
+    async loginWithPasswort<T>(
         email: string,
         password: string
-    ): Promise<{ user: U; token: string }> {
+    ): Promise<{ user: IUser<T>; token: string }> {
         const auth = this.strategy.authenticate()
         return new Promise((res, rej) => {
             auth(email, password, (_, user, error: Error) => {
                 if (error) {
                     return rej(new Error(error.message))
                 }
+
                 if (!user) {
                     return rej(new Error('User not found'))
                 }
 
-                const { data, ...config } = makePayload(user)
+                const config = this.strategy.getOptions()
+                const data = makePayload(user, config)
+
                 jwt.sign(
                     data,
                     config.secret,
@@ -85,15 +96,17 @@ export default class Authentication<U> {
         })
     }
 
-    async loginWithUser<U extends IUser>(
-        user: U
-    ): Promise<{ user: U; token: string }> {
+    async loginWithUser<T>(
+        user: IUser<T>
+    ): Promise<{ user: IUser<T>; token: string }> {
         return new Promise((res, rej) => {
             if (!user) {
                 return rej(new Error('User not found'))
             }
 
-            const { data, ...config } = makePayload(user)
+            const config = this.strategy.getOptions()
+            const data = makePayload(user, config)
+
             jwt.sign(
                 data,
                 config.secret,

@@ -1,30 +1,25 @@
 import passport from 'passport'
-import { Request, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
+import { Request, Response, NextFunction } from 'express'
 
 import {
     ForbiddenError,
     UnavailableTokenError,
     UnauthorizedError,
-} from './errors'
-import AuthResponse from './AuthResponse'
+} from './Errors'
 import Authentication from './Authentication'
 
-export default function Middleware(auth: Authentication) {
+export default function Middleware<U>(auth: Authentication<U>) {
     return (
         request: Request,
-        response: AuthResponse,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        response: Response & { auth: any },
         next: NextFunction
     ): void => {
         passport.authenticate(
             'jwt',
-            { session: false },
+            { session: auth.strategy.isSession() },
             async (error, user, info) => {
-                response.auth = {
-                    info: null,
-                    error: null,
-                    token: null,
-                }
+                response.auth = {}
 
                 if (auth.debug && (info || error)) {
                     console.info(
@@ -66,8 +61,8 @@ export default function Middleware(auth: Authentication) {
 
                 const deserializer = auth.strategy.deserialize()
                 deserializer(user.email, () => null).then((user) => {
-                    response.auth.token = request.headers.authorization
-                    response.user = user
+                    response.auth.token = auth.strategy.extractToken(request)
+                    response.auth.user = user
                     next()
                 })
             }
