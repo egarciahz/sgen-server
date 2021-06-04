@@ -20,8 +20,8 @@ import Address from '../../Location/Address'
 import Phone from '../../Phone'
 import User from '../../User'
 
-import PersonAddress from '../Bridge/PersonAddress'
-import PersonPhones from '../Bridge/PersonPhones'
+import PersonAddress from './PersonAddress'
+import PersonPhones from './PersonPhones'
 
 export enum GENDER {
     MALE = 'Male',

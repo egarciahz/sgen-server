@@ -4,17 +4,14 @@ import {
     Column,
     DataType,
     PrimaryKey,
-    AllowNull,
     Default,
-    Unique,
-    Index,
     AutoIncrement,
-    HasMany,
+    BelongsTo,
 } from 'sequelize-typescript'
-import { Field, ObjectType, ID, Int } from 'type-graphql'
+import { Field, ObjectType, ID } from 'type-graphql'
 // import { Model } from 'sequelize-relay-pagination';
 import { INode } from '@server/gql'
-import User from './User'
+import Tenant from './Tenant'
 
 @ObjectType({
     implements: [INode],
@@ -22,37 +19,37 @@ import User from './User'
 @Table({
     paranoid: true,
 })
-export default class Tenant extends Model<Tenant> implements INode {
+export default class SmtpConfig extends Model<SmtpConfig> implements INode {
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)
     @Column
     id: number
 
-    @AllowNull
-    @Field(() => String, { nullable: true })
-    @Column(DataType.STRING)
-    description?: string
-
-    @Unique
-    @Index
     @Field(() => String)
     @Column(DataType.STRING)
-    token: string
+    usename: string
+
+    @Field(() => String)
+    @Column(DataType.STRING)
+    password: string
+
+    @Column(DataType.STRING)
+    host: string
+
+    @Field(() => String)
+    @Column(DataType.STRING(5))
+    port: number
 
     @Default(true)
     @Field(() => Boolean)
     @Column(DataType.BOOLEAN)
-    active: boolean
+    secure: boolean
 
-    @Column(DataType.STRING(16))
-    passPhrase: string
-
-    @Default(20)
-    @Field(() => Int)
+    @Field(() => ID)
     @Column(DataType.INTEGER)
-    availableLicenceCount: number
+    tenantId: number
 
-    @HasMany(() => User)
-    users: User[]
+    @BelongsTo(() => Tenant, 'tenantId')
+    tenant: Tenant
 }

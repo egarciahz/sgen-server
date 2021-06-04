@@ -12,7 +12,7 @@ import { Field, ObjectType, registerEnumType, ID } from 'type-graphql'
 import { enumValToArray } from '@server/core'
 import { INode } from '@server/gql'
 
-import PersonPhones from './Org/Bridge/PersonPhones'
+import PersonPhones from './Org/People/PersonPhones'
 import Person from './Org/People'
 
 export enum PHONE_TYPE {

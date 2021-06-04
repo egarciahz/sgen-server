@@ -7,7 +7,6 @@ import {
     Comment,
     BelongsTo,
     ForeignKey,
-    AllowNull,
     BelongsToMany,
     DefaultScope,
     AutoIncrement,
@@ -15,7 +14,7 @@ import {
 import { Field, ObjectType, ID } from 'type-graphql'
 import { INode } from '@server/gql'
 
-import PersonAddress from '../Org/Bridge/PersonAddress'
+import PersonAddress from '../Org/People/PersonAddress'
 import Person from '../Org/People'
 import City from './City'
 

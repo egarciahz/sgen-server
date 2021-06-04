@@ -109,7 +109,7 @@ export default class User
     tenantId: number
 
     @Field(() => Tenant)
-    @BelongsTo(() => Tenant)
+    @BelongsTo(() => Tenant, 'tenantId')
     tenant: Tenant
 
     get isActive(): boolean {
