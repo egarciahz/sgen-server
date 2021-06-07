@@ -3,19 +3,16 @@ import {
     Model,
     Column,
     DataType,
-    AllowNull,
     BeforeCreate,
     PrimaryKey,
     BelongsToMany,
     DefaultScope,
-    Default,
     Comment,
     Unique,
     AutoIncrement,
 } from 'sequelize-typescript'
 import { Field, ObjectType, ID, registerEnumType } from 'type-graphql'
 // import { Model, Pagination } from 'sequelize-relay-pagination';
-import { enumValToArray } from '@server/core'
 import { IRole, ROLE_LEVEL } from '@server/auth'
 import { INode } from '@server/gql'
 
@@ -78,17 +75,6 @@ export default class Role extends Model<Role> implements IRole, INode {
         type: DataType.STRING,
     })
     description?: string
-
-    @AllowNull
-    @Comment('Override all permissions from case')
-    @Field(() => ROLE_SPECIAL, { nullable: true })
-    @Column(DataType.ENUM(...(enumValToArray(ROLE_SPECIAL) as string[])))
-    special?: ROLE_SPECIAL
-
-    @Default(ROLE_TARGET.USER)
-    @Comment('Used to filter cases. Default is User')
-    @Column(DataType.ENUM(...(enumValToArray(ROLE_TARGET) as string[])))
-    target: ROLE_TARGET
 
     @Field(() => [Permission], {
         nullable: 'items',
