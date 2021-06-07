@@ -119,7 +119,7 @@ export function composer(
             },
             optionsSuccessStatus: 200,
             preflightContinue: true,
-            credentials: true,
+            // credentials: true,
         })
     )
     app.use(parserJSON())
