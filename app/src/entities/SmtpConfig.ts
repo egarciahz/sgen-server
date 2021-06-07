@@ -28,7 +28,7 @@ export default class SmtpConfig extends Model<SmtpConfig> implements INode {
 
     @Field(() => String)
     @Column(DataType.STRING)
-    usename: string
+    username: string
 
     @Field(() => String)
     @Column(DataType.STRING)

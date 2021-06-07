@@ -31,6 +31,10 @@ export default class Tenant extends Model<Tenant> implements INode {
     @Column
     id: number
 
+    @Field(() => String, { nullable: true })
+    @Column(DataType.STRING)
+    name: string
+
     @AllowNull
     @Field(() => String, { nullable: true })
     @Column(DataType.STRING)

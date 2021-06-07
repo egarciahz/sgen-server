@@ -8,7 +8,6 @@ import {
     Scopes,
     BelongsToMany,
     HasOne,
-    Default,
     AutoIncrement,
 } from 'sequelize-typescript'
 import { Field, ObjectType, registerEnumType, ID } from 'type-graphql'
@@ -17,6 +16,7 @@ import { enumValToArray } from '@server/core'
 import { INode } from '@server/gql'
 
 import Address from '../../Location/Address'
+// import Tenant from '../../Tenant'
 import Phone from '../../Phone'
 import User from '../../User'
 
@@ -82,9 +82,9 @@ export default class Person extends Model<Person> implements INode {
     @BelongsToMany(() => Phone, () => PersonPhones)
     phones: Phone[]
 
-    // @ForeignKey(() => Tenant)
-    // @Column({ comment: 'Tenant ID for manager people' })
-    // tenantId: number
+    @Field(() => ID)
+    @Column({ comment: 'Tenant ID for manager people' })
+    tenantId: number
 
     // @BelongsTo(() => Tenant)
     // tenant: Tenant
@@ -92,9 +92,4 @@ export default class Person extends Model<Person> implements INode {
     @Field(() => User, { nullable: true })
     @HasOne(() => User)
     user?: User
-
-    @Default(false)
-    @Field(() => Boolean)
-    @Column(DataType.BOOLEAN)
-    isIntegrator: boolean
 }
