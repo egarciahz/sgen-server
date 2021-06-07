@@ -16,6 +16,7 @@ passport.deserializeUser(auth.strategy.deserialize())
 passport.use(auth.strategy.createLocalStrategy())
 passport.use(
     auth.strategy.createJwtStrategy({
+        ignoreExpiration: true,
         jsonWebTokenOptions: {
             algorithms: [Algorithm],
         },
