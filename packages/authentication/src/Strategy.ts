@@ -81,11 +81,15 @@ export default class Strategy<T extends {}> {
     }
 
     createJwtStrategy(
-        config?: Omit<StrategyOptions, 'jwtFromRequest' | 'algorithms'>
+        config?: Omit<
+            StrategyOptions,
+            'jwtFromRequest' | 'algorithms' | 'secretOrKey'
+        >
     ): JwtStrategy {
         const _conf = _.defaults(config ?? {}, {
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             algorithms: [this.options.algorithm],
+            secretOrKey: this.options.secret,
         })
         const finderProxy = this.deserialize()
 
