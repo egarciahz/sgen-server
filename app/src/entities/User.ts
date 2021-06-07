@@ -49,7 +49,7 @@ const PersonScope = {
 @Table
 export default class User
     extends Model<User>
-    implements IUser<{ isActive: boolean }>, INode
+    implements IUser<{ isActive: boolean }>, INode, PasswordChunk
 {
     @AutoIncrement
     @PrimaryKey

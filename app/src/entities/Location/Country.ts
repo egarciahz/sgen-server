@@ -1,29 +1,38 @@
-import { Table, Column, Model, DataType, PrimaryKey, HasMany } from 'sequelize-typescript';
-import { Field, ObjectType, ID } from 'type-graphql';
-import State from './State';
+import { INode } from '@server/gql'
+import {
+    Table,
+    Column,
+    Model,
+    DataType,
+    PrimaryKey,
+    HasMany,
+} from 'sequelize-typescript'
+import { Field, ObjectType, ID } from 'type-graphql'
+import State from './State'
 
-@ObjectType()
+@ObjectType({
+    implements: [INode],
+})
 @Table
-export default class Country extends Model<Country>{
-
+export default class Country extends Model<Country> implements INode {
     //@AutoIncrement
     @PrimaryKey
     @Field(() => ID)
     @Column
-    id: number;
+    id: number
 
     @Field(() => String)
     @Column(DataType.STRING(4))
-    code: string;
+    code: string
 
     @Field(() => Number)
     @Column(DataType.INTEGER)
-    phonecode: number;
+    phonecode: number
 
     @Field(() => String)
     @Column(DataType.STRING)
-    name: string;
+    name: string
 
-    @HasMany(() => State, "country_id")
+    @HasMany(() => State, 'country_id')
     states: State[]
 }

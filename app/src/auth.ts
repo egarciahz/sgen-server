@@ -1,7 +1,7 @@
 import { Strategy, Authentication } from '@server/auth'
 
 export const KeyName = 'email'
-export const Algorithm = 'ES256'
+export const Algorithm = 'HS256'
 
 const auth = new Authentication(
     new Strategy({
