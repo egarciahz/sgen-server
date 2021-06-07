@@ -7,15 +7,15 @@ import passport from 'passport'
 
 import express from 'express'
 import { DBInstance } from './db'
-import auth, { Algorithm, KeyName } from './auth'
+import Auth, { Algorithm, GQLAuthMiddleware, KeyName } from './auth'
 
 const app = express()
 
 passport.serializeUser(Encoder.serialize(KeyName))
-passport.deserializeUser(auth.strategy.deserialize())
-passport.use(auth.strategy.createLocalStrategy())
+passport.deserializeUser(Auth.strategy.deserialize())
+passport.use(Auth.strategy.createLocalStrategy())
 passport.use(
-    auth.strategy.createJwtStrategy({
+    Auth.strategy.createJwtStrategy({
         ignoreExpiration: true,
         jsonWebTokenOptions: {
             algorithms: [Algorithm],
@@ -25,12 +25,13 @@ passport.use(
 
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(Middleware(auth))
+app.use(Middleware(Auth))
 
 composer(app, {
     rootDir: __dirname,
     whitelist: ORIGINS,
     siteUrl: URL,
+    authChecker: GQLAuthMiddleware,
 })
 
 app.listen(PORT, () => {
