@@ -1,3 +1,5 @@
+import IContext from './IContext'
+
 export * from './utils/mapKeys'
 export * from './utils/filterex'
 export * from './utils/omitFields'
@@ -7,4 +9,6 @@ export * from './utils/parseAdditionalFields'
 export * from './loaders'
 export * from './composer'
 
-export const isProdMode: boolean = process.env.NODE_ENV === 'production'
+const isProdMode: boolean = process.env.NODE_ENV === 'production'
+
+export { isProdMode, IContext }
