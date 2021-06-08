@@ -1,4 +1,3 @@
-import { Response } from 'express'
 import { AuthChecker } from 'type-graphql'
 import {
     Strategy,
@@ -7,8 +6,10 @@ import {
     Statement,
     IRole,
     IPermission,
+    IAuth,
 } from '@server/auth'
 import User from './entities/User'
+import { IContext } from '@server/core'
 
 export const KeyName = 'email'
 export const Algorithm = 'HS256'
@@ -52,10 +53,11 @@ export const mapRolePermission = (
         })
 }
 
-export const GQLAuthMiddleware: AuthChecker<{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    response: Response & { auth: any }
-}> = ({ context: { response } }, roles) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const GQLAuthMiddleware: AuthChecker<IContext<{ auth: IAuth<{}> }>> = (
+    { context: { response } },
+    roles
+) => {
     const { user } = response.auth
 
     if (!roles?.length) {
