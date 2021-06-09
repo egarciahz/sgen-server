@@ -80,9 +80,6 @@ export default class Tenant
     @Column(DataType.INTEGER)
     availableLicenceCount: number
 
-    @HasMany(() => User, 'tenantId')
-    users: User[]
-
     @HasMany(() => Person, 'tenantId')
     people: User[]
 
