@@ -13,7 +13,7 @@ import {
     BelongsTo,
     AutoIncrement,
 } from 'sequelize-typescript'
-import { Field, ObjectType, ID } from 'type-graphql'
+import { Field, ObjectType, ID, Int } from 'type-graphql'
 // import { Model, Pagination } from 'sequelize-relay-pagination';
 import { PasswordChunk, IUser, ROLE_LEVEL } from '@server/auth'
 import { INode } from '@server/gql'
@@ -97,14 +97,16 @@ export default class User
     @BelongsToMany(() => Role, () => UserRoles)
     roles: Role[]
 
+    @Field(() => Int)
     @ForeignKey(() => Person)
-    @Column
+    @Column(DataType.INTEGER)
     ownerId: number
 
     @Field(() => Person)
     @BelongsTo(() => Person)
     owner: Person
 
+    @Field(() => Int)
     @Column(DataType.INTEGER)
     tenantId: number
 
