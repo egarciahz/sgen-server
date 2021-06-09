@@ -19,7 +19,6 @@ import {
     Mutation,
     Args,
     ObjectType,
-    Ctx,
 } from 'type-graphql'
 import { Includeable, Op } from 'sequelize'
 // import moment from 'moment'
@@ -32,7 +31,7 @@ import User from '../../entities/User'
 import Tenant from '../../entities/Tenant'
 
 import { likeSearch, ArgId, EdgeType, ConnectionType } from '@server/gql'
-// import { NewPersonInput } from './inputs'
+import { UseAuth, IUseAuth } from '../../auth'
 import {
     PeopleFilter,
     // PeopleConnectionArg,
@@ -66,7 +65,7 @@ export class PersonResolver {
             where: {
                 id: parent.tenantId,
             },
-            attributes: ['id', 'name', 'token'],
+            attributes: ['id', 'name', 'description', 'token'],
             include: [],
         })
     }
@@ -95,17 +94,17 @@ export class PersonResolver {
     @Query(() => Person, { nullable: true })
     async person(
         @Args() { id }: ArgId,
-        @Ctx() { response }: any
+        @UseAuth() { user: { ownerId } }: IUseAuth
     ): Promise<Person | null> {
-        id = id || response.user.ownerId
-        return Person.scope('all').findByPk(id)
+        return Person.scope('all').findByPk(id ?? ownerId)
     }
 
     @Authorized()
     @Query(() => [Person])
     async people(
         @Args()
-        { isUser, fullname, tenantId, ...cursor }: PeopleFilter
+        { isUser, fullname, ...cursor }: PeopleFilter,
+        @UseAuth() { user: { tenantId } }: IUseAuth
     ): Promise<Person[]> {
         const include: Includeable[] = []
 

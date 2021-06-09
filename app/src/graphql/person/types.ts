@@ -2,6 +2,7 @@ import { InputType, Field, ID, ArgsType } from 'type-graphql'
 import { ArgId, ArgPaginate, ConnectionArgs } from '@server/gql'
 
 import Person, { GENDER } from '../../entities/Org/People'
+import { NewUserInput } from '../user/types'
 
 @ArgsType()
 export class UpdatePersonArg extends ArgId {
@@ -10,10 +11,7 @@ export class UpdatePersonArg extends ArgId {
 }
 
 @ArgsType()
-export class PeopleFilter extends ArgPaginate implements Partial<Person> {
-    @Field(() => ID)
-    tenantId: number
-
+export class PeopleFilter extends ArgPaginate {
     @Field(() => Boolean, { nullable: true })
     isUser?: boolean
 
@@ -22,10 +20,7 @@ export class PeopleFilter extends ArgPaginate implements Partial<Person> {
 }
 
 @ArgsType()
-export class PeopleFilterCon extends ConnectionArgs implements Partial<Person> {
-    @Field(() => ID)
-    tenantId: number
-
+export class PeopleFilterConnection extends ConnectionArgs {
     @Field(() => Boolean, { nullable: true })
     isUser?: boolean
 
@@ -58,8 +53,8 @@ export class NewPersonInput
     // @Field(() => [NewPhoneInput])
     // phones: NewPhoneInput[]
 
-    // @Field(() => NewUserInput, { nullable: true })
-    // user?: NewUserInput
+    @Field(() => NewUserInput, { nullable: true })
+    user?: NewUserInput
 }
 
 @InputType()
@@ -77,9 +72,6 @@ export class UpdatePersonInput
 
     @Field(() => Date, { nullable: true })
     dateOfBirth?: Date
-
-    @Field(() => Boolean, { nullable: true })
-    isIntegrator?: boolean
 
     // @Field(() => [UpdateAddressInput], { nullable: 'itemsAndList' })
     // addresses?: UpdateAddressInput[]
