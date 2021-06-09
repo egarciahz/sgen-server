@@ -14,68 +14,92 @@ import { IContext } from '@server/core'
 export const KeyName = 'email'
 export const Algorithm = 'HS256'
 
-const findByName = (name: string, statements: Statement[]) =>
-    statements.findIndex((statement) => statement.name === name) > -1
+/**
+ * @description
+ * look for coincidence in the statements by name
+ *
+ * @param {Array<IRole | IPermission>} source user roles or permissions list
+ * @param {Array<string | never>} query role or permission names to match
+ *
+ * @returns boolean
+ */
+const matchStatementByName = (
+    source: (IRole | IPermission)[],
+    query: (string | never)[]
+) => {
+    const findByName = (name: string, statements: Statement[]) =>
+        statements.findIndex((statement) => statement.name === name) > -1
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const mapRolePermission = (
+    return (
+        source.findIndex(
+            (role) =>
+                query[0 /*role name*/] === role.name &&
+                (query[1 /*permission name*/]
+                    ? findByName(query[1], (role as IRole)?.permissions)
+                    : true)
+        ) > -1
+    )
+}
+
+/**
+ * @description
+ * filter empty entries and map permission pairs to compare with user entries
+ *
+ * @example
+ * ['role-name:permission-name', ...] -> [['role-name', 'permission-name'], ...]
+ * ['role-name']                      -> [['role-name', undefined]]
+ * [':permission-name']               -> [[undefined 'permission-name']]
+ *
+ * @description
+ * then remap the result to get matches in the user's permission tree and return a boolean array
+ *
+ * @example
+ * ['role-name', ':permission-name', 'role-name:permission-name'] -> [mapping] -> [true, false, false]
+ *
+ * @returns Array<boolean>
+ */
+export const mapRolePermission: (
     statements: string[],
     user: IUser<unknown>
-) => {
-    const matchStatement = (
-        arr: (IRole | IPermission)[],
-        verb: (string | never)[]
-    ) => {
-        return (
-            arr.findIndex((role) => {
-                return (
-                    verb[0 /*role name*/] === role.name &&
-                    (verb[1 /*permission name*/]
-                        ? findByName(verb[1], (role as IRole)?.permissions)
-                        : true)
-                )
-            }) > -1
-        )
-    }
-
+) => boolean[] = (statements, user) => {
     return statements
-        .filter((statement) => statement && statement.trim() !== '')
+        .filter((statement) => statement && statement.trim() !== '') // clean
         .map((statement) => {
+            // decode
             const verb: (string | never)[] = /^\:.+/.test(statement)
                 ? [void 0, statement.replace(':', '')]
                 : [...statement.split(':'), void 0].slice(0, 1)
-
+            // if a single permission
             if (!verb[0]) {
-                return matchStatement(user.permissions, [verb[1], void 0])
+                return matchStatementByName(user.permissions, [verb[1], void 0])
             }
-
-            return matchStatement(user.roles, verb)
+            // if role or role->permission value
+            return matchStatementByName(user.roles, verb)
         })
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export const GQLAuthMiddleware: AuthChecker<IContext<{ auth: IAuth<{}> }>> = (
+export type AuthContext = IContext<{ auth: IAuth<{}> }>
+
+export const GQLAuthMiddleware: AuthChecker<AuthContext> = (
     { context: { response } },
     roles
 ) => {
     const { user } = response.auth
-
-    if (!roles?.length) {
-        response.status(403)
-        return !!user
-    }
 
     if (!user) {
         response.status(401)
         return false
     }
 
-    const hasGranted = mapRolePermission(roles, user)
-    if (hasGranted.every((pred) => pred)) {
-        return true
+    if (!roles?.length) {
+        response.status(403)
+        return !!user
     }
 
-    return false
+    const hasGranted = mapRolePermission(roles, user)
+
+    return hasGranted.some((pred) => pred)
 }
 
 const Auth = new Authentication(
