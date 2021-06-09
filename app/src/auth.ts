@@ -1,4 +1,4 @@
-import { AuthChecker } from 'type-graphql'
+import { AuthChecker, createParamDecorator } from 'type-graphql'
 import {
     Strategy,
     Authentication,
@@ -79,9 +79,30 @@ export const mapRolePermission: (
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type AuthContext = IContext<{ auth: IAuth<{}> }>
+export type IAuthContext = IContext<{ auth: IAuth<{}> }>
 
-export const GQLAuthMiddleware: AuthChecker<AuthContext> = (
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type IUseAuth<T = {}> = IAuth<T>
+
+/**
+ * @description
+ * property decrator for access to authentication context
+ *
+ * @example
+ * class ResolverClass {
+ *  method(@UserAuth() auth:IUseAuth): any {
+ *      const { user, token } = auth
+ *      ...
+ *  }
+ * }
+ */
+export function UseAuth(): ParameterDecorator {
+    return createParamDecorator<IAuthContext>(({ context: { response } }) => {
+        return response.auth ?? null
+    })
+}
+
+export const GQLAuthMiddleware: AuthChecker<IAuthContext> = (
     { context: { response } },
     roles
 ) => {
@@ -102,7 +123,7 @@ export const GQLAuthMiddleware: AuthChecker<AuthContext> = (
     return hasGranted.some((pred) => pred)
 }
 
-const Auth = new Authentication(
+const AuthStrategy = new Authentication(
     new Strategy({
         algorithm: Algorithm,
         expiresIn: 1000 * 60 * 60,
@@ -125,4 +146,4 @@ const Auth = new Authentication(
     })
 )
 
-export default Auth
+export default AuthStrategy
