@@ -78,11 +78,11 @@ export const mapRolePermission: (
         })
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type IAuthContext = IContext<{ auth: IAuth<{}> }>
+export type IAuthContext = IContext<{ auth: IAuth<{ tenantId: number }> }>
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type IUseAuth<T = {}> = IAuth<T>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type IUseAuth<T extends Record<string, any> = { tenantId: number }> =
+    IAuth<T>
 
 /**
  * @description
