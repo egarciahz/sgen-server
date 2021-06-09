@@ -12,6 +12,7 @@ import {
 import { QueryTypes } from 'sequelize'
 import { ArgId, ArgPaginate } from '@server/gql'
 
+import User from '../../entities/User'
 import Tenant from '../../entities/Tenant'
 import Person from '../../entities/Org/People'
 
@@ -19,12 +20,25 @@ import { TenantFilter, TenantResumen } from './types'
 
 @Resolver(() => Tenant)
 export class TenantResolver {
-    @FieldResolver(() => Person)
+    @FieldResolver(() => [Person])
     async people(
         @Args() pager: ArgPaginate,
         @Root() tenant: Tenant
     ): Promise<Person[]> {
         return Person.findAll({
+            ...pager,
+            where: {
+                tenantId: tenant.id,
+            },
+        })
+    }
+
+    @FieldResolver(() => [User])
+    async users(
+        @Args() pager: ArgPaginate,
+        @Root() tenant: Tenant
+    ): Promise<User[]> {
+        return User.findAll({
             ...pager,
             where: {
                 tenantId: tenant.id,
@@ -90,7 +104,7 @@ export class TenantResolver {
         return resumen
     }
 
-    @Authorized(['admin'])
+    @Authorized()
     @Mutation(() => Tenant)
     async disableTenant(@Args() args: TenantFilter): Promise<Tenant> {
         return Tenant.findOne({
@@ -98,7 +112,7 @@ export class TenantResolver {
         }).then((tenant) => this.setStatus(tenant, false))
     }
 
-    @Authorized(['admin'])
+    @Authorized()
     @Mutation(() => Tenant)
     async enableTenant(@Args() args: TenantFilter): Promise<Tenant> {
         return Tenant.findOne({
@@ -106,12 +120,10 @@ export class TenantResolver {
         }).then((tenant) => this.setStatus(tenant, true))
     }
 
-    @Authorized(['root'])
+    @Authorized()
     @Mutation(() => Tenant, { nullable: true })
-    async deleteTenant(@Args() args: TenantFilter): Promise<Tenant | null> {
-        return Tenant.findOne({
-            ...this.getFilterSelector(args),
-        }).then((tenant) =>
+    async deleteTenant(@Args() { id }: ArgId): Promise<Tenant | null> {
+        return Tenant.findByPk(id).then((tenant) =>
             tenant ? tenant.destroy().then(() => tenant) : null
         )
     }
