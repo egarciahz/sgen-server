@@ -23,6 +23,15 @@ export enum ADDRESSS_TYPE {
     OFFICE = 'Office',
 }
 
+type AddressProperty = {
+    id: number
+    name: string
+    address: string
+    cityId: number
+    city: City
+    person: Person[]
+}
+
 @DefaultScope(() => ({
     include: [City],
 }))
@@ -30,7 +39,13 @@ export enum ADDRESSS_TYPE {
     implements: [INode],
 })
 @Table
-export default class Address extends Model<Address> implements INode {
+export default class Address
+    extends Model<
+        AddressProperty,
+        Omit<AddressProperty, 'id' | 'city' | 'person'>
+    >
+    implements INode
+{
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)

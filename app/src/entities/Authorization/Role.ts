@@ -52,7 +52,7 @@ registerEnumType(ROLE_LEVEL, {
 @Table({
     paranoid: true,
 })
-export default class Role extends Model<Role> implements IRole, INode {
+export default class Role extends Model implements IRole, INode {
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)

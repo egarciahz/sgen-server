@@ -18,7 +18,7 @@ import State from './State'
     implements: [INode],
 })
 @Table
-export default class City extends Model<City> implements INode {
+export default class City extends Model implements INode {
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)

@@ -19,7 +19,7 @@ import Tenant from './Tenant'
 @Table({
     paranoid: true,
 })
-export default class SmtpConfig extends Model<SmtpConfig> implements INode {
+export default class SmtpConfig extends Model implements INode {
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)

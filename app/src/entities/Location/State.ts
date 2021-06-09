@@ -17,7 +17,7 @@ import Country from './Country'
     implements: [INode],
 })
 @Table
-export default class State extends Model<State> implements INode {
+export default class State extends Model implements INode {
     @PrimaryKey
     @Field(() => ID)
     @Column

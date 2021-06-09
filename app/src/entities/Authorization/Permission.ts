@@ -24,10 +24,7 @@ import Role from './Role'
 @Table({
     paranoid: true,
 })
-export default class Permission
-    extends Model<Permission>
-    implements IPermission, INode
-{
+export default class Permission extends Model implements IPermission, INode {
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)

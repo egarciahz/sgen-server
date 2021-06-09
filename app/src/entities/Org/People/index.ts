@@ -9,6 +9,7 @@ import {
     BelongsToMany,
     HasOne,
     AutoIncrement,
+    ForeignKey,
 } from 'sequelize-typescript'
 import { Field, ObjectType, registerEnumType, ID } from 'type-graphql'
 //import { Model, Pagination } from 'sequelize-relay-pagination';
@@ -22,6 +23,7 @@ import User from '../../User'
 
 import PersonAddress from './PersonAddress'
 import PersonPhones from './PersonPhones'
+import Tenant from '../../Tenant'
 
 export enum GENDER {
     MALE = 'Male',
@@ -50,7 +52,7 @@ registerEnumType(GENDER, {
     implements: INode,
 })
 @Table
-export default class Person extends Model<Person> implements INode {
+export default class Person extends Model implements INode {
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)
@@ -83,6 +85,7 @@ export default class Person extends Model<Person> implements INode {
     phones: Phone[]
 
     @Field(() => ID)
+    @ForeignKey(() => Tenant)
     @Column({ comment: 'Tenant ID for manager people' })
     tenantId: number
 

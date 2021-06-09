@@ -24,12 +24,23 @@ import UserPermissions from './Authorization/Bridge/UserPermissions'
 import UserRoles from './Authorization/Bridge/UserRoles'
 import Person from './Org/People'
 import Tenant from './Tenant'
+import { Optional } from 'sequelize/types'
 // tools
 
 const PersonScope = {
     model: Person,
     attributes: ['tenantId', 'firstname', 'lastname'],
 }
+
+type UserAttributes = IUser<{
+    isActive: boolean
+    activationKey: string
+    resetPasswordKey: string
+    tenantId: number
+    tenant: Tenant
+    ownerId: number
+    owner: Person
+}>
 
 @Scopes(() => ({
     org: {
@@ -48,8 +59,11 @@ const PersonScope = {
 })
 @Table
 export default class User
-    extends Model<User>
-    implements IUser<{ isActive: boolean }>, INode, PasswordChunk
+    extends Model<
+        UserAttributes,
+        Omit<Optional<UserAttributes, 'owner'>, 'id' | 'tenant' | 'isActive'>
+    >
+    implements INode, PasswordChunk
 {
     @AutoIncrement
     @PrimaryKey

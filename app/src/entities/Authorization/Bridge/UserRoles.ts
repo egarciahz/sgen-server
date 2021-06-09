@@ -1,14 +1,14 @@
-import { Table, Column, Model, ForeignKey } from 'sequelize-typescript';
-import Role from '../Role';
-import User from '../../User';
+import { Table, Column, Model, ForeignKey } from 'sequelize-typescript'
+import Role from '../Role'
+import User from '../../User'
 
 @Table
-export default class UserRoles extends Model<UserRoles>{
+export default class UserRoles extends Model {
     @ForeignKey(() => User)
     @Column
-    userId: number;
+    userId: number
 
     @ForeignKey(() => Role)
     @Column
-    roleId: number;
+    roleId: number
 }

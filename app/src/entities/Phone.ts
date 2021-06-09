@@ -20,6 +20,13 @@ export enum PHONE_TYPE {
     MOBILE = 'Mobile',
 }
 
+type PhoneAttributes = {
+    id: number
+    number: string
+    type: PHONE_TYPE
+    people: Person[]
+}
+
 registerEnumType(PHONE_TYPE, {
     name: 'PHONE_TYPE',
     description: 'Describe if the phone is mobile or local',
@@ -30,7 +37,10 @@ registerEnumType(PHONE_TYPE, {
     implements: [INode],
 })
 @Table
-export default class Phone extends Model<Phone> implements INode {
+export default class Phone
+    extends Model<PhoneAttributes, Omit<PhoneAttributes, 'id' | 'people'>>
+    implements INode
+{
     @AutoIncrement
     @PrimaryKey
     @Field(() => ID)

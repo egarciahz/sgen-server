@@ -10,7 +10,7 @@ import Address from '../../Location/Address'
 import Person from '../People'
 
 @Table
-export default class PersonAddress extends Model<PersonAddress> {
+export default class PersonAddress extends Model {
     @PrimaryKey
     @ForeignKey(() => Address)
     @Column
