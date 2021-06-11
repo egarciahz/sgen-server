@@ -39,10 +39,40 @@ module.exports = {
             ],
             {}
         )
+
+        await queryInterface.bulkInsert(
+            'Addresses',
+            [
+                {
+                    id: 1,
+                    name: 'Home Principal',
+                    address: 'at 19th and kensintong',
+                    cityId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            ],
+            {}
+        )
+
+        await queryInterface.bulkInsert(
+            'PersonAddresses',
+            [
+                {
+                    personId: 1,
+                    addressId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+            ],
+            {}
+        )
     },
     down: async (queryInterface) => {
         await queryInterface.bulkDelete('People', null, {})
         await queryInterface.bulkDelete('Phones', null, {})
         await queryInterface.bulkDelete('PersonPhones', null, {})
+        await queryInterface.bulkDelete('Addresses', null, {})
+        await queryInterface.bulkDelete('PersonAddresses', null, {})
     },
 }
