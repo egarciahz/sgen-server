@@ -78,11 +78,12 @@ export const mapRolePermission: (
         })
 }
 
-export type IAuthContext = IContext<{ auth: IAuth<{ tenantId: number }> }>
+export type IAuthContext = IContext<{ auth: IAuth<{ tenantId: number, isSpecial?: boolean }> }>
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IUseAuth<T extends Record<string, any> = { tenantId: number }> =
-    IAuth<T>
+export type IUseAuth<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    T extends Record<string, any> = { tenantId: number; isSpecial?: boolean }
+> = IAuth<T>
 
 /**
  * @description
@@ -116,6 +117,10 @@ export const GQLAuthMiddleware: AuthChecker<IAuthContext> = (
     if (!roles?.length) {
         response.status(403)
         return !!user
+    }
+
+    if(user.isSpecial){
+        return true
     }
 
     const hasGranted = mapRolePermission(roles, user)
