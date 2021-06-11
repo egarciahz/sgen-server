@@ -27,7 +27,7 @@ type TenantAttributes = {
     token: string
     active: true
     passPhrase: string
-    availableLicenceCount: number
+    enabledLicenceCount: number
     users: User[]
     people: Person[]
     smtpConfig?: SmtpConfig
@@ -42,7 +42,10 @@ type TenantAttributes = {
 export default class Tenant
     extends Model<
         TenantAttributes,
-        Omit<Optional<TenantAttributes, 'smtpConfig'>, 'id' | 'users'>
+        Omit<
+            Optional<TenantAttributes, 'smtpConfig'>,
+            'id' | 'users' | 'people'
+        >
     >
     implements INode
 {
@@ -78,7 +81,7 @@ export default class Tenant
     @Default(20)
     @Field(() => Int)
     @Column(DataType.INTEGER)
-    availableLicenceCount: number
+    enabledLicenceCount: number
 
     @HasMany(() => Person, 'tenantId')
     people: User[]
