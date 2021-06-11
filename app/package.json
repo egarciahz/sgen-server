@@ -5,7 +5,10 @@
     "version": "0.1.0",
     "main": "./src/index.ts",
     "scripts": {
-        "start": "nodemon ./src/index.ts"
+        "start": "nodemon ./src/index.ts",
+        "sync:dev": "npx ts-node ./src/sync.ts",
+        "seed:all": "npx sequelize-cli db:seed:all",
+        "seed:undo:all": "npx sequelize-cli db:seed:undo:all"
     },
     "dependencies": {
         "@server/config": "^0.1.0",

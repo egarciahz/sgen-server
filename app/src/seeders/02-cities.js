@@ -1,5 +1,6 @@
 const cities = [
     {
+        id: 1,
         name: 'Bombuflat',
         state_id: 1,
     },

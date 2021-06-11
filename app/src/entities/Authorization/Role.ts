@@ -7,7 +7,6 @@ import {
     PrimaryKey,
     BelongsToMany,
     DefaultScope,
-    Comment,
     Unique,
     AutoIncrement,
 } from 'sequelize-typescript'
@@ -64,20 +63,36 @@ export default class Role extends Model implements IRole, INode {
     @Column(DataType.STRING(123))
     name: string
 
-    @Field(() => Number)
-    @Column(DataType.INTEGER)
+    @Field(() => Number, { nullable: true })
+    @Column({
+        allowNull: true,
+        type: DataType.INTEGER,
+    })
     level: ROLE_LEVEL
 
-    @Field(() => String)
-    @Comment('Role usage description')
+    @Field(() => Boolean, {
+        description:
+            'grant acces to all system if true, oterwise follow the regular behavior',
+    })
+    @Column({
+        defaultValue: false,
+        type: DataType.BOOLEAN,
+        comment:
+            'grant acces to all system if true, oterwise follow the regular behavior',
+    })
+    isSpecial: boolean
+
+    @Field(() => String, {
+        description: 'Role usage description',
+    })
     @Column({
         allowNull: true,
         type: DataType.STRING,
+        comment: 'Role usage description',
     })
     description?: string
 
     @Field(() => [Permission], {
-        nullable: 'items',
         description: 'All available permissions.',
     })
     @BelongsToMany(() => Permission, () => RolePermissions)
@@ -85,6 +100,14 @@ export default class Role extends Model implements IRole, INode {
 
     @BelongsToMany(() => User, () => UserRoles)
     users: User[]
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+        comment:
+            'soft link to filter custom roles bettween tenants. if null, the role is public',
+    })
+    tenantId?: number
 
     public hasPermission(name: string): boolean {
         return (

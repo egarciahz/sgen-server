@@ -2,6 +2,7 @@ import _ from 'lodash'
 import {
     Query,
     Resolver,
+    Arg,
     Args,
     Mutation,
     FieldResolver,
@@ -9,17 +10,24 @@ import {
     Authorized,
     Int,
 } from 'type-graphql'
-import { QueryTypes } from 'sequelize'
+// import { QueryTypes } from 'sequelize'
 import { ArgId, ArgPaginate } from '@server/gql'
 
+import User from '../../entities/User'
 import Tenant from '../../entities/Tenant'
 import Person from '../../entities/Org/People'
 
-import { TenantFilter, TenantResumen } from './types'
+import {
+    TenantFilter,
+    NewTenantInput,
+    UpdateLisenceCount,
+    UpdateTenantArgs,
+} from './types'
+import { Password } from '../../../../packages/authentication/src'
 
 @Resolver(() => Tenant)
 export class TenantResolver {
-    @FieldResolver(() => Person)
+    @FieldResolver(() => [Person])
     async people(
         @Args() pager: ArgPaginate,
         @Root() tenant: Tenant
@@ -29,6 +37,31 @@ export class TenantResolver {
             where: {
                 tenantId: tenant.id,
             },
+        })
+    }
+
+    @FieldResolver(() => [User])
+    async users(
+        @Args() pager: ArgPaginate,
+        @Root() tenant: Tenant
+    ): Promise<User[]> {
+        return User.findAll({
+            ...pager,
+            where: {
+                tenantId: tenant.id,
+            },
+        })
+    }
+
+    @FieldResolver(() => Int)
+    async availableLisenceCount(@Root() tenant: Tenant): Promise<number> {
+        return User.count({
+            where: {
+                tenantId: tenant.id,
+                active: true,
+            },
+        }).then((actives) => {
+            return tenant.enabledLicenceCount - actives
         })
     }
 
@@ -53,70 +86,73 @@ export class TenantResolver {
     }
 
     @Authorized()
-    @Query(() => TenantResumen, { nullable: true })
-    async tenantResumen(@Args() params: ArgId): Promise<TenantResumen | null> {
-        const [resumen = null] = await Tenant.sequelize.query(
-            `
-            SELECT 
-            T.id as id,
-            (SELECT COUNT('id') FROM People WHERE tenantId=T.id AND isIntegrator) as integrators,
-            (SELECT COUNT('id') FROM People WHERE tenantId=T.id AND isIntegrator IS NOT true) as employees,
-            (SELECT COUNT('id') FROM CustomerProfiles WHERE isClientOfTheDistributorId = C.id) as customers,
-            T.description as description,
-            T.type as type,
-            T.token as token,
-            C.name as name,
-            C.activity as activity
-            FROM Tenants as T
-            INNER JOIN Companies AS C ON C.tenantId = T.id 
-            WHERE T.id = :id;
-        `,
-            {
-                replacements: { ...params },
-                type: QueryTypes.SELECT,
+    @Mutation(() => Tenant)
+    async createTenant(
+        @Arg('data') { token, ...data }: NewTenantInput
+    ): Promise<Tenant> {
+        token = token ? token : await Password.token(16)
+        const passPhrase = await Password.token(14) // custom key cipher
+        return Tenant.create({
+            active: true,
+            passPhrase,
+            token,
+            ...data,
+        })
+    }
+
+    @Authorized()
+    @Mutation(() => Tenant, { nullable: true })
+    async updateTenantInfo(
+        @Args() { id, data }: UpdateTenantArgs
+    ): Promise<Tenant | never> {
+        return Tenant.update(data, { returning: false, where: { id } }).then(
+            ([success]) => {
+                return success > 0
+                    ? Tenant.findByPk(id, {
+                          attributes: ['id', 'name', 'desciption'],
+                      })
+                    : null
             }
         )
-
-        if (resumen) {
-            const obj = new TenantResumen()
-            _.keys(resumen).map((key) => {
-                obj[key] = resumen[key]
-
-                return
-            })
-            return obj
-        }
-
-        return resumen
     }
 
-    @Authorized(['admin'])
-    @Mutation(() => Tenant)
-    async disableTenant(@Args() args: TenantFilter): Promise<Tenant> {
-        return Tenant.findOne({
-            ...this.getFilterSelector(args),
-        }).then((tenant) => this.setStatus(tenant, false))
-    }
-
-    @Authorized(['admin'])
-    @Mutation(() => Tenant)
-    async enableTenant(@Args() args: TenantFilter): Promise<Tenant> {
-        return Tenant.findOne({
-            ...this.getFilterSelector(args),
-        }).then((tenant) => this.setStatus(tenant, true))
-    }
-
-    @Authorized(['root'])
+    @Authorized()
     @Mutation(() => Tenant, { nullable: true })
-    async deleteTenant(@Args() args: TenantFilter): Promise<Tenant | null> {
-        return Tenant.findOne({
-            ...this.getFilterSelector(args),
-        }).then((tenant) =>
+    async updateAvailableLisenceCount(
+        @Args() { id, lisenceCount }: UpdateLisenceCount
+    ): Promise<Tenant | null> {
+        return Tenant.findByPk(id).then((tenant) => {
+            if (!tenant) return tenant
+            tenant.enabledLicenceCount = lisenceCount
+            return tenant.save()
+        })
+    }
+
+    @Authorized()
+    @Mutation(() => Tenant)
+    async disableTenant(@Args() { id }: ArgId): Promise<Tenant> {
+        return Tenant.findByPk(id).then((tenant) =>
+            this.setStatus(false, tenant)
+        )
+    }
+
+    @Authorized()
+    @Mutation(() => Tenant)
+    async enableTenant(@Args() { id }: ArgId): Promise<Tenant> {
+        return Tenant.findByPk(id).then((tenant) =>
+            this.setStatus(true, tenant)
+        )
+    }
+
+    @Authorized()
+    @Mutation(() => Tenant, { nullable: true })
+    async deleteTenant(@Args() { id }: ArgId): Promise<Tenant | null> {
+        return Tenant.findByPk(id).then((tenant) =>
             tenant ? tenant.destroy().then(() => tenant) : null
         )
     }
 
-    setStatus(tenant: Tenant, status: boolean): Promise<Tenant> | null {
+    async setStatus(status: boolean, tenant?: Tenant): Promise<Tenant | null> {
         if (!tenant) return null
         tenant.active = status
         return tenant.save()

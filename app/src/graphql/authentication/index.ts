@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { pick } from 'lodash'
-import { Args, Resolver, Mutation, Query, Ctx, Authorized } from 'type-graphql'
+import { Arg, Resolver, Mutation, Query, Authorized } from 'type-graphql'
 import { IAuth, Password, UnauthorizedError } from '@server/auth'
-import Authenticator from '../../auth'
+import Authenticator, { UseAuth, IUseAuth } from '../../auth'
 import User from '../../entities/User'
 
 import { Auth, SiginIn, ChangePassword } from './types'
@@ -11,7 +9,7 @@ import { Auth, SiginIn, ChangePassword } from './types'
 @Resolver(() => Auth)
 export class AuthResolver {
     @Mutation(() => Auth)
-    async signIn(@Args() { username, password }: SiginIn): Promise<Auth> {
+    async signIn(@Arg('data') { username, password }: SiginIn): Promise<Auth> {
         return Authenticator.loginWithPasswort<User>(username, password).then(
             (res) => new Auth(res.user, res.token)
         )
@@ -21,21 +19,17 @@ export class AuthResolver {
     @Query(() => Auth, {
         description: 'Retrieve available info for currently logged user',
     })
-    async me(@Ctx() { response }: any): Promise<IAuth<unknown>> {
-        const { user, token } = response.auth
-        return Promise.resolve(new Auth(user, token))
+    async me(@UseAuth() { user, token }: IUseAuth): Promise<IAuth<unknown>> {
+        return Promise.resolve(new Auth(user as any, token))
     }
 
     @Authorized()
     @Mutation(() => Auth)
     async changePasswordOnSession(
-        @Args() { newPassword, password }: ChangePassword,
-        @Ctx() { response }: any
+        @Arg('data') { newPassword, password }: ChangePassword,
+        @UseAuth() { user }: IUseAuth
     ): Promise<Auth> {
-        const has = await Password.has(
-            password,
-            pick(response.auth?.user, 'hash', 'salt')
-        )
+        const has = await Password.has(password, pick(user, 'hash', 'salt'))
 
         if (!has) {
             throw new UnauthorizedError("Password don't match.")
@@ -43,7 +37,7 @@ export class AuthResolver {
 
         return Password.make(newPassword)
             .then((passChunk) => {
-                return User.findByPk(response.auth.user.id).then((user) => {
+                return User.findByPk(user.id).then((user) => {
                     user.hash = passChunk.hash
                     user.salt = passChunk.salt
                     return user.save()
@@ -56,19 +50,16 @@ export class AuthResolver {
     @Authorized()
     @Mutation(() => Auth)
     async changeEmailOnSession(
-        @Args() { username, password }: SiginIn,
-        @Ctx() { response }: any
+        @Arg('data') { username, password }: SiginIn,
+        @UseAuth() { user }: IUseAuth
     ): Promise<Auth> {
-        const has = await Password.has(
-            password,
-            pick(response.user, 'hash', 'salt')
-        )
+        const has = await Password.has(password, pick(user, 'hash', 'salt'))
 
         if (!has) {
             throw new UnauthorizedError("Password don't match.")
         }
 
-        return User.findByPk(response.user.id)
+        return User.findByPk(user.id)
             .then((user) => {
                 user.email = username
                 return user.save()

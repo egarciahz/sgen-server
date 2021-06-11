@@ -61,7 +61,18 @@ type UserAttributes = IUser<{
 export default class User
     extends Model<
         UserAttributes,
-        Omit<Optional<UserAttributes, 'owner'>, 'id' | 'tenant' | 'isActive'>
+        Omit<
+            Optional<
+                UserAttributes,
+                'owner' | 'roles' | 'permissions' | 'activationKey'
+            >,
+            | 'id'
+            | 'tenant'
+            | 'isActive'
+            | 'resetPasswordKey'
+            | 'permissions'
+            | 'roles'
+        >
     >
     implements INode, PasswordChunk
 {
@@ -123,10 +134,6 @@ export default class User
     @Field(() => Int)
     @Column(DataType.INTEGER)
     tenantId: number
-
-    @Field(() => Tenant)
-    @BelongsTo(() => Tenant, 'tenantId')
-    tenant: Tenant
 
     get isActive(): boolean {
         return this.active && this.activationKey === null

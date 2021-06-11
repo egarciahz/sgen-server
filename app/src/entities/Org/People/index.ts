@@ -7,6 +7,7 @@ import {
     AllowNull,
     Scopes,
     BelongsToMany,
+    BelongsTo,
     HasOne,
     AutoIncrement,
     ForeignKey,
@@ -61,6 +62,10 @@ export default class Person extends Model implements INode {
 
     @Field(() => String)
     @Column(DataType.STRING(100))
+    dni: string
+
+    @Field(() => String)
+    @Column(DataType.STRING(100))
     firstname: string
 
     @AllowNull
@@ -89,8 +94,8 @@ export default class Person extends Model implements INode {
     @Column({ comment: 'Tenant ID for manager people' })
     tenantId: number
 
-    // @BelongsTo(() => Tenant)
-    // tenant: Tenant
+    @BelongsTo(() => Tenant)
+    tenant: Tenant
 
     @Field(() => User, { nullable: true })
     @HasOne(() => User)

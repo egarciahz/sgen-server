@@ -1,19 +1,13 @@
-import { InputType, Field, ID, ArgsType } from 'type-graphql'
+import { InputType, Field, ArgsType } from 'type-graphql'
 import { ArgId, ArgPaginate, ConnectionArgs } from '@server/gql'
 
 import Person, { GENDER } from '../../entities/Org/People'
+import { NewUserInput } from '../user/types'
+import { PhoneInput, UpdatePhoneInput } from '../phone/types'
+import { AddressInput, UpdateAddressInput } from '../address/types'
 
 @ArgsType()
-export class UpdatePersonArg extends ArgId {
-    @Field(() => UpdatePersonInput)
-    data: UpdatePersonInput
-}
-
-@ArgsType()
-export class PeopleFilter extends ArgPaginate implements Partial<Person> {
-    @Field(() => ID)
-    tenantId: number
-
+export class PeopleFilter extends ArgPaginate {
     @Field(() => Boolean, { nullable: true })
     isUser?: boolean
 
@@ -22,10 +16,7 @@ export class PeopleFilter extends ArgPaginate implements Partial<Person> {
 }
 
 @ArgsType()
-export class PeopleFilterCon extends ConnectionArgs implements Partial<Person> {
-    @Field(() => ID)
-    tenantId: number
-
+export class PeopleFilterConnection extends ConnectionArgs {
     @Field(() => Boolean, { nullable: true })
     isUser?: boolean
 
@@ -38,6 +29,9 @@ export class NewPersonInput
     implements Partial<Omit<Person, 'user' | 'addresses' | 'phones'>>
 {
     @Field(() => String)
+    dni: string
+
+    @Field(() => String)
     firstname: string
 
     @Field(() => String)
@@ -49,23 +43,23 @@ export class NewPersonInput
     @Field(() => Date)
     dateOfBirth: Date
 
-    @Field(() => ID)
-    tenantId: number
+    @Field(() => [AddressInput])
+    addresses: AddressInput[]
 
-    // @Field(() => [NewAddressInput])
-    // addresses: NewAddressInput[]
+    @Field(() => [PhoneInput])
+    phones: PhoneInput[]
 
-    // @Field(() => [NewPhoneInput])
-    // phones: NewPhoneInput[]
-
-    // @Field(() => NewUserInput, { nullable: true })
-    // user?: NewUserInput
+    @Field(() => NewUserInput, { nullable: true })
+    user?: NewUserInput
 }
 
 @InputType()
 export class UpdatePersonInput
     implements Partial<Omit<Person, 'user' | 'addresses' | 'phones'>>
 {
+    @Field(() => String, { nullable: true })
+    dni?: string
+
     @Field(() => String, { nullable: true })
     firstname?: string
 
@@ -78,12 +72,15 @@ export class UpdatePersonInput
     @Field(() => Date, { nullable: true })
     dateOfBirth?: Date
 
-    @Field(() => Boolean, { nullable: true })
-    isIntegrator?: boolean
+    @Field(() => [UpdateAddressInput], { nullable: 'itemsAndList' })
+    addresses?: UpdateAddressInput[]
 
-    // @Field(() => [UpdateAddressInput], { nullable: 'itemsAndList' })
-    // addresses?: UpdateAddressInput[]
+    @Field(() => [UpdatePhoneInput], { nullable: 'itemsAndList' })
+    phones?: UpdatePhoneInput[]
+}
 
-    // @Field(() => [UpdatePhoneInput], { nullable: 'itemsAndList' })
-    // phones?: UpdatePhoneInput[]
+@ArgsType()
+export class UpdatePersonArg extends ArgId {
+    @Field(() => UpdatePersonInput)
+    data: UpdatePersonInput
 }

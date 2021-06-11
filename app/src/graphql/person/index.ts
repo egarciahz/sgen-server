@@ -1,16 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { keys, pickBy, identity, capitalize, isBoolean } from 'lodash'
 import {
-    // omit,
-    // pick,
-    // keys,
-    pickBy,
-    identity,
-    capitalize,
-    isBoolean,
-} from 'lodash'
-import {
-    // Arg,
+    Arg,
     Authorized,
     FieldResolver,
     Query,
@@ -19,24 +9,25 @@ import {
     Mutation,
     Args,
     ObjectType,
-    Ctx,
 } from 'type-graphql'
 import { Includeable, Op } from 'sequelize'
-// import moment from 'moment'
+import { likeSearch, ArgId, EdgeType, ConnectionType } from '@server/gql'
+import { mapAdditionals } from '@server/core'
+
 import Person from '../../entities/Org/People'
-// import PersonPhone from '../../entities/Org/People/PersonPhones'
-// import PersonAddress from '../../entities/Org/People/PersonAddress'
-// import Address from '../../entities/Location/Address'
+import PersonPhone from '../../entities/Org/People/PersonPhones'
+import PersonAddress from '../../entities/Org/People/PersonAddress'
+import Address from '../../entities/Location/Address'
 import User from '../../entities/User'
-// import Phone from '../../entities/Phone'
+import Phone from '../../entities/Phone'
 import Tenant from '../../entities/Tenant'
 
-import { likeSearch, ArgId, EdgeType, ConnectionType } from '@server/gql'
-// import { NewPersonInput } from './inputs'
+import { UseAuth, IUseAuth } from '../../auth'
 import {
     PeopleFilter,
+    NewPersonInput,
     // PeopleConnectionArg,
-    // UpdatePersonArg,
+    UpdatePersonArg,
 } from './types'
 
 @ObjectType()
@@ -66,7 +57,7 @@ export class PersonResolver {
             where: {
                 id: parent.tenantId,
             },
-            attributes: ['id', 'name', 'token'],
+            attributes: ['id', 'name', 'description', 'token'],
             include: [],
         })
     }
@@ -93,11 +84,7 @@ export class PersonResolver {
 
     @Authorized()
     @Query(() => Person, { nullable: true })
-    async person(
-        @Args() { id }: ArgId,
-        @Ctx() { response }: any
-    ): Promise<Person | null> {
-        id = id || response.user.ownerId
+    async person(@Args() { id }: ArgId): Promise<Person | null> {
         return Person.scope('all').findByPk(id)
     }
 
@@ -105,7 +92,8 @@ export class PersonResolver {
     @Query(() => [Person])
     async people(
         @Args()
-        { isUser, fullname, tenantId, ...cursor }: PeopleFilter
+        { isUser, fullname, ...cursor }: PeopleFilter,
+        @UseAuth() { user: { tenantId } }: IUseAuth
     ): Promise<Person[]> {
         const include: Includeable[] = []
 
@@ -115,7 +103,7 @@ export class PersonResolver {
             },
             identity
         )
-
+        // asd
         if (likeSearch(fullname)?.name) {
             filter = {
                 ...filter,
@@ -204,86 +192,98 @@ export class PersonResolver {
     //     });
     // }
 
-    // @Authorized(['admin'])
-    // @Mutation(() => Person, { nullable: true })
-    // async createPerson(
-    //     @Arg('data') data: NewPersonInput
-    // ): Promise<Person | null> {
-    //     return Person.create(
-    //         { ...data },
-    //         {
-    //             include: [Address, Phone, User],
-    //         }
-    //     )
-    // }
-
-    // @Authorized(['admin'])
-    // @Mutation(() => Person)
-    // async updatePerson(
-    //     @Args() { id, data }: UpdatePersonArg
-    // ): Promise<Person | null> {
-    //     const { phones, addresses, ...person } = data
-    //     const phonesmap = mapAdditionals(phones)
-    //     const addresssmap = mapAdditionals(addresses)
-    //     console.log(addresssmap)
-
-    //     return Promise.all([
-    //         person &&
-    //             keys(person).length > 0 &&
-    //             Person.update(person, {
-    //                 where: {
-    //                     id,
-    //                 },
-    //             }),
-    //         employeeProfile &&
-    //             keys(employeeProfile).length > 0 &&
-    //             Employee.update(omit(employeeProfile, 'id'), {
-    //                 where: pick(employeeProfile, 'id'),
-    //             }),
-    //         PersonPhone.bulkCreate(
-    //             phonesmap.insert.map((phone) => ({ phone, personId: id })),
-    //             {
-    //                 ignoreDuplicates: true,
-    //                 include: [
-    //                     {
-    //                         model: Phone,
-    //                         as: 'phone',
-    //                     },
-    //                 ],
-    //             }
-    //         ),
-    //         Phone.bulkCreate(phonesmap.update, {
-    //             ignoreDuplicates: false,
-    //             updateOnDuplicate: ['number', 'type'],
-    //         }),
-    //         PersonAddress.bulkCreate(
-    //             addresssmap.insert.map((address) => ({
-    //                 address,
-    //                 personId: id,
-    //             })),
-    //             {
-    //                 ignoreDuplicates: true,
-    //                 include: [
-    //                     {
-    //                         model: Address,
-    //                         as: 'address',
-    //                     },
-    //                 ],
-    //             }
-    //         ),
-    //         Address.bulkCreate(addresssmap.update, {
-    //             ignoreDuplicates: false,
-    //             updateOnDuplicate: ['cityId', 'name', 'address'],
-    //         })
-    //             .then((res) => console.log(res))
-    //             .catch((err) => console.error(err)),
-    //     ]).then(() => Person.scope('all').findByPk(id))
-    // }
-
-    @Authorized(['admin'])
+    @Authorized(['administrator'])
     @Mutation(() => Person, { nullable: true })
-    async deletePerson(@Args() { id }: ArgId): Promise<Person | null> {
-        return Person.findByPk(id).then((person) =>
+    async createPerson(
+        @Arg('data') data: NewPersonInput,
+        @UseAuth() { user: { tenantId } }: IUseAuth
+    ): Promise<Person | null> {
+        return Person.create(
+            { tenantId, ...data },
+            {
+                include: [Address, Phone, User],
+            }
+        )
+    }
+
+    @Authorized(['administrator'])
+    @Mutation(() => Person, { nullable: true })
+    async updatePerson(
+        @Args() { id, data }: UpdatePersonArg,
+        @UseAuth() { user: { tenantId } }: IUseAuth
+    ): Promise<Person | null> {
+        const { phones, addresses, ...person } = data
+        const phonesmap = mapAdditionals(phones)
+        const addresssmap = mapAdditionals(addresses)
+        const matchPerson = await Person.findOne({
+            where: { id, tenantId },
+            attributes: ['id'],
+        })
+        // if don't match return null
+        if (!matchPerson?.id) return null
+
+        return Promise.all([
+            person &&
+                keys(person).length > 0 &&
+                Person.update(person, {
+                    where: {
+                        id,
+                    },
+                }),
+            PersonPhone.bulkCreate(
+                phonesmap.insert.map((phone) => ({ phone, personId: id })),
+                {
+                    ignoreDuplicates: true,
+                    include: [
+                        {
+                            model: Phone,
+                            as: 'phone',
+                        },
+                    ],
+                }
+            ),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            Phone.bulkCreate(phonesmap.update as any, {
+                ignoreDuplicates: false,
+                updateOnDuplicate: ['number', 'type'],
+            }),
+            PersonAddress.bulkCreate(
+                addresssmap.insert.map((address) => ({
+                    address,
+                    personId: id,
+                })),
+                {
+                    ignoreDuplicates: true,
+                    include: [
+                        {
+                            model: Address,
+                            as: 'address',
+                        },
+                    ],
+                }
+            ),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            Address.bulkCreate(addresssmap.update as any, {
+                ignoreDuplicates: false,
+                updateOnDuplicate: ['cityId', 'name', 'address'],
+            })
+                .then((res) => console.log(res))
+                .catch((err) => console.error(err)),
+        ]).then(() => Person.scope('all').findByPk(id))
+    }
+
+    @Authorized(['administrator'])
+    @Mutation(() => Person, { nullable: true })
+    async deletePerson(
+        @Args() { id }: ArgId,
+        @UseAuth() { user: { tenantId } }: IUseAuth
+    ): Promise<Person | null> {
+        return Person.findOne({
+            where: {
+                id,
+                tenantId,
+            },
+        }).then((person) =>
             person ? person.destroy().then(() => person) : null
         )
     }

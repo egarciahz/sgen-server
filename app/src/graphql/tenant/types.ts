@@ -11,6 +11,15 @@ export class TenantFilter implements Partial<Tenant> {
     token?: string
 }
 
+@ArgsType()
+export class UpdateLisenceCount {
+    @Field(() => ID)
+    id: number
+
+    @Field(() => Int)
+    lisenceCount: number
+}
+
 @InputType()
 export class NewTenantInput implements Partial<Tenant> {
     @Field(() => String, {
@@ -28,13 +37,28 @@ export class NewTenantInput implements Partial<Tenant> {
 
     @Field(() => Int, {
         defaultValue: 20,
-        description: 'initialize available licence count for this tenant',
+        description: 'initialize enabled licence count for this tenant',
         nullable: true,
     })
-    availableLicenceCount?: number
+    enabledLicenceCount: number
+}
 
-    @Field(() => Boolean, { nullable: true })
-    active?: boolean
+@InputType()
+export class UpdateTenantInput implements Partial<Tenant> {
+    @Field(() => String)
+    name: string
+
+    @Field(() => String)
+    description: string
+}
+
+@ArgsType()
+export class UpdateTenantArgs {
+    @Field(() => ID)
+    id: number
+
+    @Field(() => UpdateTenantInput)
+    data: UpdateTenantInput
 }
 
 @ObjectType()
@@ -45,41 +69,4 @@ export class TenantNode extends EdgeType(Tenant) {
 @ObjectType()
 export class TenantConnection extends ConnectionType(TenantNode) {
     // for paginate
-}
-
-@ObjectType({
-    description: 'Summary of tenant resources, staff and dependencies',
-})
-export class TenantResumen implements Partial<Omit<Tenant, 'users'>> {
-    @Field(() => ID, {
-        description: 'Tenant Id',
-    })
-    id: number
-
-    @Field(() => String)
-    name: string
-
-    @Field(() => String)
-    token: string
-
-    @Field(() => Int, {
-        description: 'Total people Count for this Tenant',
-        defaultValue: 0,
-    })
-    peopleCount: number
-
-    @Field(() => Int, {
-        description: 'Total enableds licence count for this Tenant',
-        defaultValue: 0,
-    })
-    enabledLicencesCount: number
-
-    @Field(() => Int)
-    availableLicenceCount: number
-
-    @Field(() => String, {
-        description: 'Description of tenant',
-        nullable: true,
-    })
-    description?: string
 }
