@@ -1,4 +1,10 @@
-import { Table, Column, Model, ForeignKey } from 'sequelize-typescript'
+import {
+    Table,
+    Column,
+    Model,
+    ForeignKey,
+    BelongsTo,
+} from 'sequelize-typescript'
 import Permission from '../Permission'
 import Role from '../Role'
 
@@ -11,4 +17,7 @@ export default class RolePermissions extends Model {
     @ForeignKey(() => Permission)
     @Column
     permissionId: number
+
+    @BelongsTo(() => Permission)
+    permission: Permission
 }
