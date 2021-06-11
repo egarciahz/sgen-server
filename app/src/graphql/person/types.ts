@@ -1,14 +1,10 @@
-import { InputType, Field, ID, ArgsType } from 'type-graphql'
+import { InputType, Field, ArgsType } from 'type-graphql'
 import { ArgId, ArgPaginate, ConnectionArgs } from '@server/gql'
 
 import Person, { GENDER } from '../../entities/Org/People'
 import { NewUserInput } from '../user/types'
-
-@ArgsType()
-export class UpdatePersonArg extends ArgId {
-    @Field(() => UpdatePersonInput)
-    data: UpdatePersonInput
-}
+import { PhoneInput, UpdatePhoneInput } from '../phone/types'
+import { AddressInput, UpdateAddressInput } from '../address/types'
 
 @ArgsType()
 export class PeopleFilter extends ArgPaginate {
@@ -33,6 +29,9 @@ export class NewPersonInput
     implements Partial<Omit<Person, 'user' | 'addresses' | 'phones'>>
 {
     @Field(() => String)
+    dni: string
+
+    @Field(() => String)
     firstname: string
 
     @Field(() => String)
@@ -44,14 +43,11 @@ export class NewPersonInput
     @Field(() => Date)
     dateOfBirth: Date
 
-    @Field(() => ID)
-    tenantId: number
+    @Field(() => [AddressInput])
+    addresses: AddressInput[]
 
-    // @Field(() => [NewAddressInput])
-    // addresses: NewAddressInput[]
-
-    // @Field(() => [NewPhoneInput])
-    // phones: NewPhoneInput[]
+    @Field(() => [PhoneInput])
+    phones: PhoneInput[]
 
     @Field(() => NewUserInput, { nullable: true })
     user?: NewUserInput
@@ -61,6 +57,9 @@ export class NewPersonInput
 export class UpdatePersonInput
     implements Partial<Omit<Person, 'user' | 'addresses' | 'phones'>>
 {
+    @Field(() => String, { nullable: true })
+    dni?: string
+
     @Field(() => String, { nullable: true })
     firstname?: string
 
@@ -73,9 +72,15 @@ export class UpdatePersonInput
     @Field(() => Date, { nullable: true })
     dateOfBirth?: Date
 
-    // @Field(() => [UpdateAddressInput], { nullable: 'itemsAndList' })
-    // addresses?: UpdateAddressInput[]
+    @Field(() => [UpdateAddressInput], { nullable: 'itemsAndList' })
+    addresses?: UpdateAddressInput[]
 
-    // @Field(() => [UpdatePhoneInput], { nullable: 'itemsAndList' })
-    // phones?: UpdatePhoneInput[]
+    @Field(() => [UpdatePhoneInput], { nullable: 'itemsAndList' })
+    phones?: UpdatePhoneInput[]
+}
+
+@ArgsType()
+export class UpdatePersonArg extends ArgId {
+    @Field(() => UpdatePersonInput)
+    data: UpdatePersonInput
 }

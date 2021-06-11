@@ -1,4 +1,5 @@
 import {
+    Arg,
     Args,
     Authorized,
     FieldResolver,
@@ -11,7 +12,7 @@ import { ArgId } from '@server/gql'
 
 import Address from '../../entities/Location/Address'
 import City from '../../entities/Location/City'
-import { UpdateAddressArgs } from './types'
+import { UpdateAddressInput } from './types'
 
 @Resolver(() => Address)
 export class AddressResolver {
@@ -35,7 +36,7 @@ export class AddressResolver {
     @Authorized()
     @Mutation(() => Address)
     async updateAddress(
-        @Args() { id, data }: UpdateAddressArgs
+        @Arg('data') { id, ...data }: UpdateAddressInput
     ): Promise<Address> {
         return Address.findByPk(id).then((address) => {
             if (!address) return address

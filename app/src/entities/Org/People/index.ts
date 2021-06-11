@@ -62,6 +62,10 @@ export default class Person extends Model implements INode {
 
     @Field(() => String)
     @Column(DataType.STRING(100))
+    dni: string
+
+    @Field(() => String)
+    @Column(DataType.STRING(100))
     firstname: string
 
     @AllowNull
