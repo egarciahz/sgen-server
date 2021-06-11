@@ -1,49 +1,13 @@
 import { Args, Authorized, Mutation, Resolver } from 'type-graphql'
-import {
-    ArgId,
-    // ArgPaginate,
-    // PaginatedResponseType,
-    // EdgeType,
-    // ConnectionType,
-    // ConnectionArgs,
-} from '@server/gql'
+import { ArgId } from '@server/gql'
+
 import Phone from '../../entities/Phone'
 import Person from '../../entities/Org/People'
 import PersonPhones from '../../entities/Org/People/PersonPhones'
-import { AddPhoneArgs } from './inputs'
-
-// @ObjectType()
-// export class Phones extends PaginatedResponseType(Phone) {
-//     // for paginate
-// }
-
-// @ObjectType()
-// export class PhoneNode extends EdgeType(Phone) {
-//     // for paginate
-// }
-
-// @ObjectType()
-// export class PhoneConnection extends ConnectionType(PhoneNode) {
-//     // for paginate
-// }
+import { AddPhoneArgs } from './types'
 
 @Resolver(() => Phone)
 export class PhoneResolver {
-    // @Query(() => [Phone])
-    // async phones(@Args() { limit, offset }: ArgPaginate): Promise<Phone[]> {
-    //     return Phone.findAll({
-    //         limit, offset
-    //     })
-    // }
-
-    // @Query(() => PhoneConnection)
-    // async phoneConnection(@Args() { last, first, ...cursor }: ConnectionArgs): Promise<PhoneConnection> {
-    //     const limit = first !== null ? first : last;
-    //     return Phone.paginate({
-    //         ...cursor,
-    //         limit,
-    //     });
-    // }
 
     @Authorized()
     @Mutation(() => Phone, { nullable: true })

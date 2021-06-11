@@ -6,12 +6,12 @@ export class AddPhoneArgs {
     @Field(() => ID)
     id: number
 
-    @Field(() => [NewPhoneInput])
-    phones: NewPhoneInput[]
+    @Field(() => [PhoneInput])
+    phones: PhoneInput[]
 }
 
 @InputType()
-export class NewPhoneInput implements Partial<Phone> {
+export class PhoneInput implements Partial<Phone> {
     @Field(() => String)
     number: string
 
