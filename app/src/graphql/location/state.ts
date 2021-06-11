@@ -56,17 +56,19 @@ export class StateResolver {
         @Args() { name, countryId, ...cursor }: StatesArg
     ): Promise<State[]> {
         const namefilter = likeSearch(name)
-        let filters: Record<string, unknown> = {
-            country_id: countryId,
-        }
+        let filters: Record<string, unknown> = {}
+        
+        if(countryId) filters.country_id = countryId
+        
         if (!namefilter?.name) {
             filters = {
                 [Op.and]: {
-                    country_id: countryId,
+                    ...filters,
                     ...namefilter,
                 },
             }
         }
+
         return State.findAll({
             ...cursor,
             where: filters,

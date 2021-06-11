@@ -41,17 +41,18 @@ export class CityResolver {
 
     @Query(() => [City])
     async cities(
-        @Args() { stateId, name, ...cursor }: CitiesArg
+        @Args() { name, stateId, ...cursor }: CitiesArg
     ): Promise<City[]> {
         const namefilter = likeSearch(name)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let filters: Record<string, any> = {
-            state_id: stateId,
-        }
+        let filters: Record<string, any> = {}
+
+        if(stateId) filters.state_id = stateId
+        
         if (!namefilter?.name) {
             filters = {
                 [Op.and]: {
-                    state_id: stateId,
+                    ...filters,
                     ...namefilter,
                 },
             }
