@@ -2,6 +2,18 @@
     "version": "0.1.1-alpha.0",
     "npmClient": "yarn",
     "useWorkspaces": true,
+    "tagVersionPrefix": "v",
+    "command": {
+        "version": {
+            "ignoreChanges": ["*.md",".*"],
+            "allowBranch": ["master", "develop"],
+            "message": "chore(release): publish %s"
+        },
+        "publish":{
+            "ignoreChanges": ["*.md",".*"],
+            "graphType": "all"
+        }
+    },
     "packages": [
         "./packages/*",
         "./app"
