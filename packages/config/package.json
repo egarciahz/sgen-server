@@ -1,10 +1,10 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1-alpha.0",
   "name": "@server/config",
   "license": "MIT",
   "main": "./src/index.ts",
   "dependencies": {
-    "@server/core": "^0.1.0",
+    "@server/core": "^0.1.1-alpha.0",
     "class-validator": "^0.13.1",
     "graphql": "^15.5.0",
     "sequelize": "^6.6.2",
