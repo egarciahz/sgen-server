@@ -10,7 +10,7 @@
     "express-graphql": "0.12.0",
     "graphql": "15.5.0",
     "graphql-relay": "0.7.0",
-    "sequelize": "6.6.2",
+    "sequelize": "6.6.4",
     "sequelize-typescript": "2.1.0",
     "type-graphql": "1.1.1"
   },
