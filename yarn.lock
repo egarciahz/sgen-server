@@ -1111,15 +1111,15 @@
   dependencies:
     graphql "^14.5.3 || ^15.0.0"
 
-"@types/graphql-upload@8.0.5":
-  version "8.0.5"
-  resolved "https://registry.yarnpkg.com/@types/graphql-upload/-/graphql-upload-8.0.5.tgz#d6adce53f82630e59dca8900c2285877ae61b9eb"
-  integrity sha512-h01wGd+0wzEGZhTi5609xTRheTtHaDOIG21NEb6UP2O9FcyU6FeMiTq2rLzjtN3JL2b0HKhwYhIzEe8XLTPerw==
+"@types/graphql-upload@8.0.11":
+  version "8.0.11"
+  resolved "https://registry.yarnpkg.com/@types/graphql-upload/-/graphql-upload-8.0.11.tgz#0fef061be3dfc1f370d86cbc28bcb6a968c6b003"
+  integrity sha512-AE8RWANHutpsQt945lQZKlkq0V/zBxU5R0xhKLZN3KkBMlW95/5uJzk01HUl8gbDkG7hGl8l8lJKbi91k0UnPw==
   dependencies:
     "@types/express" "*"
     "@types/fs-capacitor" "*"
     "@types/koa" "*"
-    graphql "^15.3.0"
+    graphql "0.13.1 - 16"
 
 "@types/http-assert@*":
   version "1.5.1"
@@ -3385,7 +3385,7 @@ graphql-upload@^12.0.0:
     isobject "^4.0.0"
     object-path "^0.11.5"
 
-graphql@15.5.1, "graphql@^14.5.3 || ^15.0.0", graphql@^15.3.0, graphql@^15.5.0:
+"graphql@0.13.1 - 16", graphql@15.5.1, "graphql@^14.5.3 || ^15.0.0", graphql@^15.5.0:
   version "15.5.1"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.1.tgz#f2f84415d8985e7b84731e7f3536f8bb9d383aad"
   integrity sha512-FeTRX67T3LoE3LWAxxOlW2K3Bz+rMYAC18rRguK4wgXaTZMiJwSUwDmPFo3UadAKbzirKIg5Qy+sNJXbpPRnQw==
