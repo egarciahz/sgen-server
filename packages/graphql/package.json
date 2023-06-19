@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/express": "4.17.12",
     "@types/graphql-relay": "0.6.0",
-    "@types/graphql-upload": "8.0.5"
+    "@types/graphql-upload": "8.0.12"
   },
   "workspaces": {
     "nohoist": [

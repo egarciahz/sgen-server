@@ -1084,13 +1084,6 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/fs-capacitor@*":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@types/fs-capacitor/-/fs-capacitor-2.0.0.tgz#17113e25817f584f58100fb7a08eed288b81956e"
-  integrity sha512-FKVPOCFbhCvZxpVAMhdBdTfVfXUpsh15wFHgqOKxh9N9vzWZVuWCSijZ5T4U34XYNnuj2oduh6xcs1i+LPI+BQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/geojson@^7946.0.7":
   version "7946.0.7"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
@@ -1111,15 +1104,15 @@
   dependencies:
     graphql "^14.5.3 || ^15.0.0"
 
-"@types/graphql-upload@8.0.5":
-  version "8.0.5"
-  resolved "https://registry.yarnpkg.com/@types/graphql-upload/-/graphql-upload-8.0.5.tgz#d6adce53f82630e59dca8900c2285877ae61b9eb"
-  integrity sha512-h01wGd+0wzEGZhTi5609xTRheTtHaDOIG21NEb6UP2O9FcyU6FeMiTq2rLzjtN3JL2b0HKhwYhIzEe8XLTPerw==
+"@types/graphql-upload@8.0.12":
+  version "8.0.12"
+  resolved "https://registry.yarnpkg.com/@types/graphql-upload/-/graphql-upload-8.0.12.tgz#224738b8885bad8d50fb690b67bbe10bbcdef032"
+  integrity sha512-M0ZPZqNUzKNB16q5woEzgG/Q8DjICV80K7JvDSRnDmDFfrRdfFX/n6PbmqAN7gCzECcHVnw1gk6N4Cg0FwxCqA==
   dependencies:
     "@types/express" "*"
-    "@types/fs-capacitor" "*"
     "@types/koa" "*"
-    graphql "^15.3.0"
+    fs-capacitor "^8.0.0"
+    graphql "0.13.1 - 16"
 
 "@types/http-assert@*":
   version "1.5.1"
@@ -3069,6 +3062,11 @@ fs-capacitor@^6.2.0:
   resolved "https://registry.yarnpkg.com/fs-capacitor/-/fs-capacitor-6.2.0.tgz#fa79ac6576629163cb84561995602d8999afb7f5"
   integrity sha512-nKcE1UduoSKX27NSZlg879LdQc94OtbOsEmKMN2MBNudXREvijRKx2GEBsTMTfws+BrbkJoEuynbGSVRSpauvw==
 
+fs-capacitor@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/fs-capacitor/-/fs-capacitor-8.0.0.tgz#a95cbcf58dd50750fe718a03ec051961ef4e61f4"
+  integrity sha512-+Lk6iSKajdGw+7XYxUkwIzreJ2G1JFlYOdnKJv5PzwFLVsoJYBpCuS7WPIUSNT1IbQaEWT1nhYU63Ud03DyzLA==
+
 fs-extra@10.0.0:
   version "10.0.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-10.0.0.tgz#9ff61b655dde53fb34a82df84bb214ce802e17c1"
@@ -3385,7 +3383,7 @@ graphql-upload@^12.0.0:
     isobject "^4.0.0"
     object-path "^0.11.5"
 
-graphql@15.5.1, "graphql@^14.5.3 || ^15.0.0", graphql@^15.3.0, graphql@^15.5.0:
+"graphql@0.13.1 - 16", graphql@15.5.1, "graphql@^14.5.3 || ^15.0.0", graphql@^15.5.0:
   version "15.5.1"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.5.1.tgz#f2f84415d8985e7b84731e7f3536f8bb9d383aad"
   integrity sha512-FeTRX67T3LoE3LWAxxOlW2K3Bz+rMYAC18rRguK4wgXaTZMiJwSUwDmPFo3UadAKbzirKIg5Qy+sNJXbpPRnQw==
