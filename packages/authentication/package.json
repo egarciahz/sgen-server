@@ -20,6 +20,6 @@
     "@types/jsonwebtoken": "8.5.3",
     "@types/passport": "1.0.6",
     "@types/passport-jwt": "3.0.5",
-    "@types/passport-local": "1.0.33"
+    "@types/passport-local": "1.0.38"
   }
 }
