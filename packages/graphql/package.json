@@ -8,7 +8,7 @@
     "@server/auth": "^0.1.1-alpha.0",
     "class-validator": "0.13.1",
     "express-graphql": "0.12.0",
-    "graphql": "15.5.1",
+    "graphql": "15.9.0",
     "graphql-relay": "0.8.0",
     "sequelize": "6.6.4",
     "sequelize-typescript": "2.1.0",

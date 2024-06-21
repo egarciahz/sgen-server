@@ -16,7 +16,7 @@
         "@server/filestore": "^0.1.1-alpha.0",
         "dotenv": "10.0.0",
         "express": "4.17.1",
-        "graphql": "15.5.1",
+        "graphql": "15.9.0",
         "lodash": "4.17.21",
         "mariadb": "2.5.4",
         "mysql2": "2.2.5",
