@@ -1279,10 +1279,10 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
-"@types/validator@13.6.1":
-  version "13.6.1"
-  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-13.6.1.tgz#2a9b5c1a26fdef985ebca467ed3127181153c3e2"
-  integrity sha512-8afZ2LAE1bgl/Dp6FGN4i7G7ujeeNvSWBKhByFAO8/MZPQn91h535oW44OqOOysdEYwfAMPaTMAZkRszb3IOng==
+"@types/validator@13.15.11":
+  version "13.15.11"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-13.15.11.tgz#94bb107f97002587ace128b48fdae71bbc6108ff"
+  integrity sha512-Hpk1k5wmmbVyQSJMDrr6p0BAoXEXQGwrruN6XIINxbN2EAK5RKhajZSWs3xqSSfU4+i/NhtF3EzlHE+KQt6n0Q==
 
 "@types/validator@^13.1.3":
   version "13.1.3"
